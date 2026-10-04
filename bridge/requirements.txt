@@ -1,0 +1,4 @@
+# Most do czepka BrainAccess. Do symulatora wystarczą numpy i scipy.
+numpy
+scipy
+brainaccess

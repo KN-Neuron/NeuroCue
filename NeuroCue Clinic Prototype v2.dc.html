@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#cfd6da}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1b2430;-webkit-font-smoothing:antialiased;user-select:none}
+a{color:oklch(0.45 0.1 195)}a:hover{color:oklch(0.35 0.1 195)}
+button{font-family:inherit}
+@keyframes ncIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ncPop{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes ncSheet{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+@keyframes ncFade{from{opacity:0}to{opacity:1}}
+@keyframes ncRec{0%,100%{opacity:1}50%{opacity:.25}}
+</style>
+</helmet>
+<div style="height:{{ hV }};zoom:{{ zoomV }};min-width:900px;display:flex;flex-direction:column">
+
+<!-- menu bar -->
+<div style="height:26px;flex:none;background:#2a323a;color:#e6ebef;display:flex;align-items:center;padding:0 16px;gap:22px;font-size:13px">
+<b style="font-weight:700">NeuroCue Clinic</b><span>Plik</span><span>Edycja</span><span>Widok</span><span style="color:#fff">Sesja</span><span>Okno</span><span>Pomoc</span>
+<div style="flex:1"></div><span style="font:12px 'IBM Plex Mono';color:#aeb9c2">{{ clock }}</span></div>
+
+<!-- window -->
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;background:#f4f6f7;box-shadow:0 0 0 1px rgba(0,0,0,.18)">
+
+<!-- title / toolbar -->
+<div style="height:52px;flex:none;background:#e9eef0;border-bottom:1px solid #cdd5da;display:flex;align-items:center;padding:0 16px;gap:14px">
+<div style="display:flex;gap:8px;width:70px"><i style="width:13px;height:13px;border-radius:50%;background:#ee6a5f"></i><i style="width:13px;height:13px;border-radius:50%;background:#f5be4f"></i><i style="width:13px;height:13px;border-radius:50%;background:#61c554"></i></div>
+<div style="display:flex;gap:2px">
+<button onClick="{{ goBack }}" title="Wstecz  ⌘[" style="width:36px;height:32px;border:none;background:transparent;border-radius:6px;font-size:18px;cursor:pointer;opacity:{{ backOp }}" style-hover="background:rgba(0,0,0,.07)">‹</button>
+<button onClick="{{ goFwd }}" title="Dalej  ⌘]" style="width:36px;height:32px;border:none;background:transparent;border-radius:6px;font-size:18px;cursor:pointer;opacity:{{ fwdOp }}" style-hover="background:rgba(0,0,0,.07)">›</button></div>
+<div style="line-height:1.2"><div style="font-size:15px;font-weight:600">{{ title }}</div><div style="font-size:12px;color:#5b6773">{{ subtitle }}</div></div>
+<div style="flex:1"></div>
+<sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;font:500 13px 'IBM Plex Mono';padding:5px 12px;border-radius:6px;background:#fff;border:1px solid #cdd5da"><i style="width:9px;height:9px;border-radius:50%;background:oklch(0.58 0.17 28);animation:ncRec 1.4s infinite"></i>{{ clockT }}</div></sc-if>
+<sc-if value="{{ srcShow }}" hint-placeholder-val="{{ false }}"><div style="font:600 12px 'IBM Plex Mono';padding:6px 12px;border-radius:6px;background:{{ srcBg }};color:{{ srcFg }};border:1px solid {{ srcBd }};white-space:nowrap">{{ srcLabel }}</div></sc-if>
+<button onClick="{{ openPalette }}" style="height:32px;padding:0 12px;border-radius:6px;border:1px solid #cdd5da;background:#fff;font-size:13px;color:#5b6773;display:flex;gap:24px;align-items:center;cursor:pointer;min-width:150px;white-space:nowrap"><span>Szukaj lub wykonaj polecenie</span><span style="font:12px 'IBM Plex Mono';margin-left:auto">⌘K</span></button></div>
+
+<div style="flex:1;min-height:0;display:flex">
+
+<!-- sidebar -->
+<div style="width:230px;flex:none;background:rgba(233,238,240,.9);border-right:1px solid #cdd5da;padding:16px 10px;display:flex;flex-direction:column;gap:4px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 10px 8px">PRZEBIEG WIZYTY</div>
+<sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+<div onClick="{{ s.go }}" style="display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:8px;cursor:{{ s.cur }};background:{{ s.bg }};box-shadow:{{ s.sh }};opacity:{{ s.op }}">
+<span style="width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:{{ s.ibg }};color:{{ s.ic }};border:{{ s.ib }}">{{ s.icon }}</span>
+<span style="font-size:15px;font-weight:{{ s.fw }}">{{ s.label }}</span></div></sc-for>
+<div style="margin-top:20px;font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 10px 8px">BIBLIOTEKA</div>
+<div onClick="{{ patGo }}" style="padding:9px 10px;border-radius:8px;font-size:15px;cursor:pointer;background:{{ patBg }};box-shadow:{{ patSh }};font-weight:{{ patFw }}" style-hover="background:rgba(255,255,255,.6)">Pacjenci</div>
+<div onClick="{{ archGo }}" style="display:flex;justify-content:space-between;padding:9px 10px;border-radius:8px;font-size:15px;cursor:pointer;background:{{ archBg }};box-shadow:{{ archSh }};font-weight:{{ archFw }}" style-hover="background:rgba(255,255,255,.6)"><span>Archiwum</span></div>
+<div onClick="{{ protGo }}" style="padding:9px 10px;border-radius:8px;font-size:15px;cursor:pointer;background:{{ protBg }};box-shadow:{{ protSh }};font-weight:{{ protFw }}" style-hover="background:rgba(255,255,255,.6)">Protokoły</div>
+<div onClick="{{ eqGo }}" style="padding:9px 10px;border-radius:8px;font-size:15px;cursor:pointer;background:{{ eqBg }};box-shadow:{{ eqSh }};font-weight:{{ eqFw }}" style-hover="background:rgba(255,255,255,.6)">Sprzęt</div>
+<div style="flex:1"></div>
+<div style="padding:10px;border-radius:8px;background:rgba(255,255,255,.7);font-size:13px;line-height:1.5;color:#3d4955"><b>Dziś zalogowana:</b><br>mgr Ewa Zielińska<br><span style="color:#5b6773">fizjoterapeutka neurologiczna</span></div></div>
+
+<!-- content -->
+<div style="flex:1;min-width:0;position:relative;overflow:hidden">
+
+<!-- S0 DZIEŃ -->
+<sc-if value="{{ s0 }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(260px,24vw,360px);animation:ncIn .28s ease-out">
+<div style="padding:26px 30px;display:flex;flex-direction:column;gap:18px;overflow:auto">
+<div><div style="font-size:30px;font-weight:700">Dzień pracy</div><div style="font-size:15px;color:#5b6773;margin-top:2px">sobota, 4 października · oddział neurorehabilitacji · pacjenci po udarze</div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;overflow:hidden;flex:none">
+<sc-for list="{{ day }}" as="d" hint-placeholder-count="5">
+<div onClick="{{ d.pick }}" onDoubleClick="{{ d.open }}" style="display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid #edf0f2;cursor:pointer;background:{{ d.bg }}" style-hover="background:#eef3f5">
+<span style="font:500 15px 'IBM Plex Mono';width:54px">{{ d.t }}</span>
+<span style="width:42px;height:42px;border-radius:50%;background:oklch(0.9 0.04 195);display:grid;place-items:center;font-weight:600;color:oklch(0.35 0.08 195)">{{ d.init }}</span>
+<div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}, {{ d.age }} l.</div><div style="font-size:14px;color:#5b6773;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.dx }} · {{ d.week }}. tydzień · {{ d.side }}</div></div>
+<span style="font-size:13px;font-weight:600;padding:5px 11px;border-radius:14px;white-space:nowrap;flex:none;background:{{ d.chipBg }};color:{{ d.chipFg }}">{{ d.status }}</span></div></sc-for></div>
+<div style="font-size:13px;color:#6a7681">Kliknij, aby zobaczyć podgląd. Dwukrotne kliknięcie otwiera kartę pacjenta.</div></div>
+<div style="background:#eef2f4;border-left:1px solid #d9dfe3;padding:26px 24px;display:flex;flex-direction:column;gap:14px;overflow:auto">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">PODGLĄD</div>
+<div style="font-size:24px;font-weight:700">{{ p.name }}</div>
+<div style="font-size:15px;line-height:1.55;color:#2e3944">{{ p.dx }}<br>{{ p.side }}<br><b>Komunikacja:</b> {{ p.comm }}</div>
+<div style="padding:12px;border-radius:8px;background:#fff;font-size:14px;line-height:1.5;border:1px solid #d9dfe3"><b>Uwaga kliniczna</b><br>{{ p.alert }}</div>
+<div style="padding:12px;border-radius:8px;background:{{ p.consBg }};font-size:14px;line-height:1.5"><b>Zgoda:</b> {{ p.consent }}</div>
+<div style="flex:1"></div>
+<button onClick="{{ openPatient }}" style="height:50px;border-radius:10px;border:none;font-size:17px;font-weight:600;background:{{ p.btnBg }};color:{{ p.btnFg }};cursor:{{ p.btnCur }}">{{ p.btnLabel }}</button></div>
+</div></sc-if>
+
+<!-- S1 PACJENT -->
+<sc-if value="{{ s1 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto;padding:26px 30px;display:flex;flex-direction:column;gap:18px;animation:ncIn .28s ease-out">
+<div style="display:flex;align-items:center;gap:18px;flex:none">
+<div style="width:64px;height:64px;border-radius:50%;background:oklch(0.9 0.04 195);display:grid;place-items:center;font-weight:600;font-size:22px;color:oklch(0.35 0.08 195)">{{ p.init }}</div>
+<div style="flex:1"><div style="font-size:30px;font-weight:700">{{ p.name }}, {{ p.age }} l.</div><div style="font-size:15px;color:#5b6773">{{ p.dx }} · {{ p.week }}. tydzień · sesja {{ p.sessionNo }}</div></div></div>
+<div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;flex:none">
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">POSTĘP KLINICZNY · OSTATNIE 4 TYGODNIE</div>
+<sc-for list="{{ scales }}" as="c" hint-placeholder-count="3">
+<div><div style="display:flex;justify-content:space-between;font-size:15px"><b>{{ c.n }}</b><span style="font-family:'IBM Plex Mono'">{{ c.a }} → {{ c.b }} / {{ c.max }}</span></div>
+<div style="height:10px;background:#e3e8eb;border-radius:5px;margin-top:6px;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ c.wa }}%;background:#b9c4cb;border-radius:5px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:{{ c.wb }}%;background:oklch(0.5 0.1 195);border-radius:5px;opacity:.9"></div></div></div></sc-for></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;font-size:15px;line-height:1.55"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:8px">NOTATKA Z POPRZEDNIEJ SESJI</div>{{ p.lastNote }}</div></div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">PLAN DZISIEJSZEJ SESJI · TRUDNOŚĆ 1–5</div>
+<sc-for list="{{ exercises }}" as="e" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #edf0f2"><span style="flex:1;font-size:15px;font-weight:500">{{ e.n }}</span>
+<button onClick="{{ e.dec }}" style="width:34px;height:34px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:18px;cursor:pointer">−</button>
+<span style="font:500 17px 'IBM Plex Mono';width:20px;text-align:center">{{ e.d }}</span>
+<button onClick="{{ e.inc }}" style="width:34px;height:34px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:18px;cursor:pointer">+</button></div></sc-for>
+<div style="font-size:13px;color:#5b6773;line-height:1.5">Checkpoint po każdych 2 powtórzeniach: ruch, stabilizacja, pomiar. Decyzję zawsze podejmuje terapeuta.</div></div>
+<div style="background:#fdf3d2;border:1px solid #ecd68a;border-radius:10px;padding:16px;font-size:15px;line-height:1.5"><b>Uwaga kliniczna:</b> {{ p.alert }}</div></div></div>
+<div style="display:flex;justify-content:flex-end;gap:12px;margin-top:auto;flex:none">
+<button onClick="{{ toDay }}" style="height:50px;padding:0 24px;border-radius:10px;border:2px solid #1b2430;background:#fff;font-size:16px;font-weight:600;cursor:pointer">Wróć do dnia</button>
+<button onClick="{{ toPrep }}" style="height:50px;padding:0 28px;border-radius:10px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:16px;font-weight:600;cursor:pointer">Przygotuj sesję  →</button></div>
+</div></sc-if>
+
+<!-- S2 PRZYGOTOWANIE -->
+<sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto;padding:26px 30px;display:flex;flex-direction:column;gap:18px;animation:ncIn .28s ease-out">
+<div style="display:flex;align-items:center;gap:16px;flex:none"><div style="font-size:30px;font-weight:700;flex:1">Przygotowanie sesji</div>
+<div style="display:flex;background:#dde3e7;border-radius:9px;padding:3px;gap:2px">
+<sc-for list="{{ preps }}" as="t" hint-placeholder-count="3"><div onClick="{{ t.go }}" style="padding:8px 18px;border-radius:7px;font-size:15px;font-weight:600;cursor:pointer;background:{{ t.bg }};box-shadow:{{ t.sh }};color:{{ t.fg }}">{{ t.label }}</div></sc-for></div></div>
+
+<sc-if value="{{ p0 }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1 0 auto;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;animation:ncIn .22s ease-out">
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:22px;font-weight:600">Zgoda formalna</div><span style="font-size:13px;font-weight:600;padding:5px 12px;border-radius:14px;background:{{ fm.bg }};color:{{ fm.fg }}">{{ fm.chip }}</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;font-size:15px;line-height:1.5">
+<div><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">KTO WYRAZIŁ ZGODĘ</div>{{ fm.who }}</div>
+<div><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">FORMULARZ</div>{{ fm.form }}</div>
+<div><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">WYRAŻONA</div>{{ fm.date }}</div>
+<div><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">WAŻNA DO</div>{{ fm.until }}</div></div>
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-top:6px">ZAKRES ZGODY</div>
+<sc-for list="{{ scopeItems }}" as="c" hint-placeholder-count="4"><div onClick="{{ c.tog }}" style="display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:10px;cursor:pointer;background:{{ c.bg }};border:2px solid {{ c.bd }}"><span style="width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;font-weight:700;background:{{ c.cb }};color:#fff;border:2px solid {{ c.cbd }}">{{ c.mark }}</span><span style="flex:1;font-size:16px">{{ c.t }}</span><span style="font-size:12px;color:#6a7681">{{ c.req }}</span></div></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:12px">
+<div style="font-size:22px;font-weight:600">Bieżące przyzwolenie pacjenta</div>
+<div style="font-size:14px;color:#5b6773;line-height:1.5">Osobno od zgody formalnej. Pytaj prostym językiem i obserwuj reakcję.</div>
+<sc-for list="{{ assentOpts }}" as="a" hint-placeholder-count="3"><div onClick="{{ a.pick }}" style="padding:16px;border-radius:10px;border:2px solid {{ a.bd }};background:{{ a.bg }};font-size:17px;font-weight:600;cursor:pointer;display:flex;gap:12px;align-items:center"><span style="width:16px;height:16px;background:{{ a.col }};clip-path:{{ a.clip }};flex:none"></span>{{ a.l }}</div></sc-for>
+<sc-if value="{{ assentMsg.on }}" hint-placeholder-val="{{ false }}"><div style="padding:14px;border-radius:8px;background:{{ assentMsg.bg }};font-size:15px;line-height:1.5"><b>{{ assentMsg.h }}</b><br>{{ assentMsg.t }}</div></sc-if></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">KARTA DLA PACJENTA · TRYB PIKTOGRAMÓW</div>
+<div style="min-height:110px;border:2px dashed #b9c4cb;border-radius:10px;display:grid;place-items:center;font:13px 'IBM Plex Mono';color:#6a7681;text-align:center;padding:14px">piktogramy: czepek, brak bólu,<br>kciuk w górę, karta STOP</div>
+<button style="height:44px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Pokaż na drugim ekranie</button></div></div></div></sc-if>
+
+<sc-if value="{{ pA }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1 0 auto;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;animation:ncIn .22s ease-out">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:22px">
+<div style="font-size:24px;font-weight:600">Jak pacjent czuje się dzisiaj?</div>
+<div><div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:10px">BÓL LUB DYSKOMFORT PRZED SESJĄ (0–10)</div>
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
+<sc-for list="{{ vasOpts }}" as="v" hint-placeholder-count="6"><div onClick="{{ v.pick }}" style="padding:14px 6px;border-radius:10px;border:2px solid {{ v.bd }};background:{{ v.bg }};text-align:center;cursor:pointer"><div style="font:500 26px 'IBM Plex Mono'">{{ v.n }}</div><div style="font-size:13px;color:#4a5560;margin-top:4px">{{ v.l }}</div></div></sc-for></div>
+<sc-if value="{{ vasWarn }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:12px 14px;border-radius:8px;background:#fdf3d2;font-size:15px;line-height:1.5"><b>Ból ≥ 6.</b> Rozważ zmianę planu przed sesją. Sygnał zmiany reakcji nie jest pomiarem bólu.</div></sc-if></div>
+<div><div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:10px">SEN OSTATNIEJ NOCY</div>
+<div style="display:flex;gap:10px"><sc-for list="{{ sleepOpts }}" as="o" hint-placeholder-count="3"><div onClick="{{ o.pick }}" style="flex:1;padding:14px;border-radius:10px;border:2px solid {{ o.bd }};background:{{ o.bg }};text-align:center;font-size:16px;font-weight:600;cursor:pointer">{{ o.l }}</div></sc-for></div></div>
+<div><div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:10px">CZYNNIKI MOGĄCE ZMIENIĆ SYGNAŁ · ZAZNACZ, JEŚLI WYSTĘPUJĄ</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><sc-for list="{{ confOpts }}" as="o" hint-placeholder-count="5"><div onClick="{{ o.pick }}" style="padding:10px 16px;border-radius:22px;border:2px solid {{ o.bd }};background:{{ o.bg }};font-size:15px;font-weight:600;cursor:pointer">{{ o.l }}</div></sc-for></div></div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<div style="font-size:20px;font-weight:600;margin-bottom:4px">Potwierdź przed startem</div>
+<sc-for list="{{ chkItems }}" as="c" hint-placeholder-count="3"><div onClick="{{ c.tog }}" style="display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:10px;cursor:pointer;background:{{ c.bg }};border:2px solid {{ c.bd }}"><span style="width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;font-weight:700;background:{{ c.cb }};color:#fff;border:2px solid {{ c.cbd }}">{{ c.mark }}</span><span style="font-size:16px;line-height:1.45">{{ c.t }}</span></div></sc-for>
+<div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-top:8px">PREFEROWANY SPOSÓB KOMUNIKACJI</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ commOpts }}" as="o" hint-placeholder-count="5"><div onClick="{{ o.pick }}" style="padding:9px 16px;border-radius:22px;border:2px solid {{ o.bd }};background:{{ o.bg }};font-size:15px;font-weight:600;cursor:pointer">{{ o.l }}</div></sc-for></div>
+<div onClick="{{ toggleSelf }}" style="display:flex;gap:14px;align-items:center;padding:14px;border-radius:10px;cursor:pointer;background:#f4f6f7;font-size:15px"><span style="width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;font-weight:700;background:{{ selfBg }};color:#fff;border:2px solid {{ selfBd }}">{{ selfMark }}</span>Pacjent może dziś udzielić uproszczonego samoopisu</div></div></div></sc-if>
+
+<sc-if value="{{ pB }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1 0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;animation:ncIn .22s ease-out">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:14px">
+<div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">UŁOŻENIE PO UDARZE</div>
+<div style="flex:1;min-height:260px;border:2px dashed #b9c4cb;border-radius:12px;display:grid;place-items:center;font:14px 'IBM Plex Mono';color:#6a7681;text-align:center;padding:20px">schemat: siedzenie z podparciem<br>ręki niedowładnej, ekran na wprost</div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<div style="font-size:24px;font-weight:600;margin-bottom:6px">Ułożenie i otoczenie</div>
+<sc-for list="{{ posItems }}" as="c" hint-placeholder-count="6"><div onClick="{{ c.tog }}" style="display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:10px;cursor:pointer;background:{{ c.bg }};border:2px solid {{ c.bd }}"><span style="width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;font-weight:700;background:{{ c.cb }};color:#fff;border:2px solid {{ c.cbd }}">{{ c.mark }}</span><span style="font-size:16px;line-height:1.45">{{ c.t }}</span></div></sc-for></div></div></sc-if>
+
+<sc-if value="{{ p1 }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1 0 auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;animation:ncIn .22s ease-out">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="font-size:22px;font-weight:600">Załóż czepek i sprawdź elektrody</div>
+<div style="padding:14px 16px;border-radius:10px;background:{{ dp.bg }};border:1px solid {{ dp.bd }};display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:220px"><div style="font-size:16px;font-weight:700;color:{{ dp.fg }}">{{ dp.title }}</div><div style="font-size:13.5px;line-height:1.5;color:#3d4955;margin-top:2px">{{ dp.sub }}</div></div>
+<sc-if value="{{ dp.canScan }}" hint-placeholder-val="{{ true }}"><button onClick="{{ dp.scan }}" style="height:38px;padding:0 16px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">{{ dp.scanLabel }}</button></sc-if>
+<sc-if value="{{ dp.canDisc }}" hint-placeholder-val="{{ false }}"><button onClick="{{ dp.disc }}" style="height:38px;padding:0 16px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">{{ dp.discLabel }}</button></sc-if></div>
+<sc-if value="{{ dp.showCfg }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;color:#3d4955"><span>Progi impedancji:</span><span>dobry poniżej</span><input value="{{ dp.cfgGood }}" onInput="{{ dp.setGood }}" style="width:64px;height:32px;border:1px solid #c3cbd1;border-radius:6px;padding:0 8px;font:14px 'IBM Plex Mono';user-select:text;background:#fff"><span>kΩ, zły powyżej</span><input value="{{ dp.cfgBad }}" onInput="{{ dp.setBad }}" style="width:64px;height:32px;border:1px solid #c3cbd1;border-radius:6px;padding:0 8px;font:14px 'IBM Plex Mono';user-select:text;background:#fff"><span>kΩ</span><span style="color:#6a7681">Elektrody suche BrainAccess: typowo 50–200 kΩ. Impedancja to tylko wskazówka, o ważności okna decyduje analiza sygnału.</span></div></sc-if>
+<sc-if value="{{ dp.hasList }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ dp.list }}" as="d" hint-placeholder-count="2"><div onClick="{{ d.pick }}" style="display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:8px;background:#fff;border:1px solid #c3cbd1;cursor:pointer" style-hover="background:#eef3f5"><b style="font-size:15px">{{ d.name }}</b><span style="font:12px 'IBM Plex Mono';color:#6a7681;flex:1">{{ d.tag }}</span><span style="font-size:14px;font-weight:600;color:oklch(0.45 0.1 195)">Połącz →</span></div></sc-for></div></sc-if></div>
+<div style="display:grid;grid-template-columns:{{ elecGrid.tpl }};gap:{{ elecGrid.gap }};justify-content:center">
+<sc-for list="{{ elecs }}" as="e" hint-placeholder-count="8">
+<div style="grid-column:{{ e.gc }};grid-row:{{ e.gr }};padding:{{ e.pad }};border-radius:10px;border:2px solid {{ e.bd }};background:{{ e.bg }};display:flex;flex-direction:column;gap:{{ e.gp }};align-items:center;transition:all .3s;min-width:0">
+<div style="width:{{ e.sz }}px;height:{{ e.sz }}px;background:{{ e.col }};clip-path:{{ e.clip }};transition:background .3s"></div>
+<div style="font:600 {{ e.fn }} 'IBM Plex Mono'">{{ e.n }}</div><div style="font-size:{{ e.fk }};color:#4a5560;white-space:nowrap">{{ e.k }}</div><div style="font-size:13px;font-weight:600;display:{{ e.wd }}">{{ e.w }}</div></div></sc-for></div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<div style="font-size:18px;font-weight:600">{{ elecMsg }}</div>
+<div style="font-size:14px;line-height:1.5;color:#7a4a00">{{ elecSub }}</div>
+<div style="font-size:15px;line-height:1.55;color:#4a5560">{{ elecGoal }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:15px"><div style="display:flex;justify-content:space-between"><span>Akcelerometr (ruch głowy)</span><b style="color:{{ accelCol }}">{{ accelTxt }}</b></div><div style="display:flex;justify-content:space-between"><span>Bateria czepka</span><b>{{ batTxt }}</b></div>
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-top:6px">TĘTNO / EKG · OPCJONALNE</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ hrOpts }}" as="o" hint-placeholder-count="3"><div onClick="{{ o.pick }}" style="padding:9px 14px;border-radius:20px;border:2px solid {{ o.bd }};background:{{ o.bg }};font-size:14px;font-weight:600;cursor:pointer">{{ o.l }}</div></sc-for></div>
+<div style="font-size:14px;line-height:1.5;color:#4a5560">{{ hrNote }}</div></div>
+<sc-if value="{{ needFix }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fixElec }}" style="height:46px;border-radius:8px;border:2px solid #1b2430;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Dodałam żel · sprawdź ponownie</button></sc-if></div></div></sc-if>
+
+<sc-if value="{{ p2 }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1 0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;animation:ncIn .22s ease-out">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:32px;display:flex;flex-direction:column;align-items:center;gap:20px">
+<div style="position:relative;width:260px;height:260px"><div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient({{ calCol }} 0 {{ calPct }}%,#e4e8eb {{ calPct }}% 100%)"></div><div style="position:absolute;inset:22px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center"><div><div style="font:500 46px 'IBM Plex Mono'">{{ calS }}<span style="font-size:22px;color:#6a7681"> / 90 s</span></div><div style="font-size:15px;color:#5b6773">czystego sygnału</div></div></div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-radius:10px;background:{{ calSt.bg }};border:2px solid {{ calSt.col }}"><span style="width:18px;height:18px;background:{{ calSt.col }};clip-path:{{ calSt.clip }}"></span><b style="font-size:16px">{{ calSt.label }}</b></div>
+<div style="font-size:15px;line-height:1.55;color:#3d4955;text-align:center;max-width:420px">Potrzebujemy 90 sekund czystego sygnału. Ruch nie jest błędem — pomiar zostanie automatycznie wstrzymany.</div></div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between"><div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">{{ calReqText }}</div><b style="font-size:14px">{{ calGood }} / {{ calN }}</b></div>
+<div style="display:grid;grid-template-columns:{{ calGrid.tpl }};gap:8px"><sc-for list="{{ calChans }}" as="c" hint-placeholder-count="8"><div style="grid-column:{{ c.gc }};grid-row:{{ c.gr }};min-width:0;padding:10px 4px;border-radius:8px;border:2px solid {{ c.bd }};background:{{ c.bg }};text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:14px;height:14px;background:{{ c.col }};clip-path:{{ c.clip }}"></span><b style="font:600 13px 'IBM Plex Mono'">{{ c.n }}</b></div></sc-for></div>
+<sc-if value="{{ calFailBox }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;border-radius:10px;background:#fbe4e0;border:2px solid oklch(0.58 0.17 28);font-size:15px;line-height:1.55"><b>Kalibracja niezaliczona.</b><br>{{ calFailText }}<div style="display:flex;gap:10px;margin-top:12px"><button onClick="{{ calRetry }}" style="height:44px;padding:0 18px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Popraw elektrody i powtórz</button><button onClick="{{ calCancel }}" style="height:44px;padding:0 18px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Przerwij bez zapisu</button></div></div></sc-if></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 12px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">BASELINE DO TEJ SESJI</div>
+<sc-for list="{{ baseOpts }}" as="o" hint-placeholder-count="2"><div onClick="{{ o.pick }}" style="display:flex;gap:12px;align-items:center;padding:14px;border-radius:10px;border:2px solid {{ o.bd }};background:{{ o.bg }};cursor:pointer"><span style="width:18px;height:18px;border-radius:50%;border:2px solid #1b2430;display:grid;place-items:center"><i style="width:8px;height:8px;border-radius:50%;background:{{ o.dot }}"></i></span><div><b style="font-size:15px">{{ o.l }}</b><div style="font-size:13px;color:#5b6773">{{ o.s }}</div></div></div></sc-for>
+<sc-if value="{{ calDemoShow }}" hint-placeholder-val="{{ true }}"><button onClick="{{ calDemoFail }}" style="margin-top:4px;height:38px;border-radius:8px;border:1px dashed #9aa5ae;background:transparent;font-size:13px;color:#4a5560;cursor:pointer">{{ calDemoLabel }}</button></sc-if></div></div></div></sc-if>
+
+<div style="font-size:15px;color:#7a4a00;background:#fdf3d2;border-radius:8px;padding:10px 14px;flex:none;display:{{ missDisp }}"><b>Aby kontynuować:</b> {{ missing }}</div>
+<div style="display:flex;justify-content:space-between;gap:12px;flex:none">
+<button onClick="{{ prepBack }}" style="height:50px;padding:0 24px;border-radius:10px;border:2px solid #1b2430;background:#fff;font-size:16px;font-weight:600;cursor:pointer">{{ prepBackLabel }}</button>
+<button onClick="{{ prepNext }}" style="height:50px;padding:0 28px;border-radius:10px;border:none;background:{{ prepBg }};color:#fff;font-size:16px;font-weight:600;cursor:{{ prepCur }}">{{ prepLabel }}</button></div>
+</div></sc-if>
+
+<!-- S3 SESJA -->
+<sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:250px minmax(0,1fr);animation:ncIn .28s ease-out">
+<div style="background:#eef2f4;border-right:1px solid #d9dfe3;padding:20px 14px;display:flex;flex-direction:column;gap:8px;overflow:auto">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 6px">ĆWICZENIA</div>
+<sc-for list="{{ exList }}" as="e" hint-placeholder-count="4"><div style="padding:12px;border-radius:8px;background:{{ e.bg }};box-shadow:{{ e.sh }};font-size:15px;line-height:1.35;opacity:{{ e.op }};font-weight:{{ e.fw }}"><div style="font:12px 'IBM Plex Mono';color:#5b6773">{{ e.k }} · trudność {{ e.d }}</div>{{ e.n }}</div></sc-for>
+<button onClick="{{ nextEx }}" style="height:44px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px;flex:none">{{ nextExLabel }}</button>
+<div style="flex:1"></div>
+<div style="padding:12px;border-radius:8px;background:#fff;border:1px solid #d9dfe3;font-size:13px;line-height:1.55;flex:none"><b>Protokół</b><br>{{ protoLine }}</div></div>
+<div style="padding:18px 24px;display:flex;flex-direction:column;gap:14px;min-height:0;overflow:auto">
+<div style="display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:12px 18px;flex:none">
+<div style="flex:1 1 300px;min-width:0"><div style="font-size:18px;font-weight:600">{{ p.name }} · {{ curEx }}</div><div style="font-size:13px;color:#5b6773">Seria 1 z 3 · powtórzenie {{ rep }} z 10 · Zgoda ✓ · checkpoint {{ cpNo }}</div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-right:4px">{{ demoLabel }}</span>
+<sc-for list="{{ demoOpts }}" as="d" hint-placeholder-count="5"><button onClick="{{ d.pick }}" style="height:34px;padding:0 12px;border-radius:17px;border:1.5px solid {{ d.bd }};background:{{ d.bg }};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ d.l }}</button></sc-for></div></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;flex:none">
+<div style="background:{{ ck.bg }};border:3px solid {{ ck.col }};border-radius:12px;padding:24px 28px;display:flex;flex-direction:column;gap:16px;transition:background .3s,border-color .3s">
+<div style="display:flex;align-items:center;gap:26px"><div style="width:96px;height:96px;background:{{ ck.col }};clip-path:{{ ck.clip }};flex:none;transition:background .3s"></div>
+<div style="min-width:0"><div style="font:500 12px 'IBM Plex Mono';letter-spacing:.1em;color:#4a5560">CHECKPOINT {{ cpNo }}</div><div style="font-size:38px;font-weight:700;line-height:1.08;color:#1b2430">{{ ck.lab }}</div><div style="font-size:19px;margin-top:6px;color:#2e3944">{{ ck.sub }}</div><div style="font-size:15px;margin-top:4px;color:#4a5560">{{ ck.hint }}</div></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"><sc-for list="{{ phaseStrip }}" as="x" hint-placeholder-count="4"><div style="padding:8px 4px;border-radius:6px;text-align:center;font-size:13px;font-weight:600;background:{{ x.bg }};color:{{ x.fg }}">{{ x.l }}</div></sc-for></div>
+<div style="font-size:14px;font-weight:600;color:#1b2430;border-top:1px solid rgba(0,0,0,.12);padding-top:10px">Sygnał zmiany reakcji — nie pomiar bólu. Decyzję podejmuje terapeuta.</div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">JAKOŚĆ I WARUNKI POMIARU</div>
+<sc-for list="{{ qual }}" as="q" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:10px;font-size:14px;padding:5px 0;border-bottom:1px solid #edf0f2"><span style="width:12px;height:12px;background:{{ q.col }};clip-path:{{ q.clip }};flex:none"></span><span style="flex:1;color:#4a5560">{{ q.k }}</span><b>{{ q.v }}</b></div></sc-for></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">TĘTNO · {{ hrCard.src }}</div>
+<sc-if value="{{ hrCard.on }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 40px 'IBM Plex Mono'">{{ hrCard.bpm }}</span><span style="font-size:15px;color:#5b6773">bpm</span><span style="margin-left:auto;font:500 14px 'IBM Plex Mono';color:{{ hrCard.dcol }}">{{ hrCard.delta }}</span></div>
+<svg viewBox="0 0 200 40" preserveAspectRatio="none" style="width:100%;height:44px;background:#f7f9fa;border-radius:6px"><path d="{{ hrCard.d }}" fill="none" stroke="#1b2430" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+<div style="font-size:13px;color:#4a5560;line-height:1.5">{{ hrCard.sub }}</div></sc-if>
+<sc-if value="{{ hrCard.off }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;color:#5b6773;line-height:1.55;padding:10px 0">{{ hrOffText }}</div></sc-if></div></div>
+
+<sc-if value="{{ hasBanner }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:14px 18px;border-radius:10px;background:{{ banner.bg }};border:2px solid {{ banner.col }};animation:ncPop .25s ease-out"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.1em;color:#4a5560">REAKCJA PO ZMIANIE</div><div style="font-size:17px;font-weight:600;margin-top:2px">{{ banner.text }}</div></div></sc-if>
+
+<sc-if value="{{ isBrak }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:14px 18px;border-radius:10px;background:#fff;border:2px solid #7f8b95;display:flex;align-items:center;gap:16px;animation:ncPop .25s ease-out"><div style="flex:1"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.1em;color:#4a5560">CO ZROBIĆ</div><div style="font-size:17px;font-weight:600">{{ remedyText }}</div></div>
+<sc-if value="{{ hasRemedy }}" hint-placeholder-val="{{ false }}"><button onClick="{{ remedyRun }}" style="height:46px;padding:0 18px;border-radius:8px;border:2px solid #1b2430;background:#fff;font-size:15px;font-weight:600;cursor:pointer">{{ remedyLabel }}</button></sc-if>
+<button onClick="{{ retryCp }}" style="height:46px;padding:0 20px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Powtórz checkpoint</button></div></sc-if>
+
+<sc-if value="{{ isDc }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:14px 18px;border-radius:10px;background:#fff;border:2px solid oklch(0.58 0.17 28);display:flex;align-items:center;gap:16px;animation:ncPop .25s ease-out"><div style="flex:1"><div style="font-size:17px;font-weight:600">Czepek rozłączony. Dane do tej pory są zapisane lokalnie.</div><div style="font-size:14px;color:#4a5560;margin-top:2px">Sprawdź połączenie lub baterię. Sesja jest wstrzymana.</div></div><button onClick="{{ reconnect }}" style="height:46px;padding:0 20px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Połącz ponownie</button></div></sc-if>
+
+<div style="flex:none;background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:14px 18px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">CO ROBISZ?</div><div style="font-size:13px;color:#5b6773">{{ decHint }}</div></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+<sc-for list="{{ decOpts }}" as="d" hint-placeholder-count="6"><button onClick="{{ d.pick }}" style="height:48px;border-radius:9px;border:2px solid {{ d.bd }};background:{{ d.bg }};opacity:{{ d.op }};font-size:15px;font-weight:600;cursor:{{ d.cur }}">{{ d.l }}</button></sc-for></div></div>
+
+<div style="flex:none;background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">OŚ SESJI · RUCH → CHECKPOINT → DECYZJA → EFEKT</div>
+<div style="display:flex;gap:8px;overflow:auto;padding-bottom:2px">
+<sc-for list="{{ axis }}" as="a" hint-placeholder-count="6"><div style="flex:none;min-width:92px;padding:8px 10px;border-radius:8px;background:{{ a.bg }};border:1.5px solid {{ a.bd }}"><div style="display:flex;gap:8px;align-items:center"><span style="width:12px;height:12px;background:{{ a.col }};clip-path:{{ a.clip }}"></span><b style="font:600 13px 'IBM Plex Mono'">{{ a.n }}</b></div><div style="font-size:12px;color:#4a5560;margin-top:3px;max-width:150px">{{ a.t }}</div></div></sc-for></div></div>
+
+<div style="display:flex;gap:12px;flex:none">
+<button onClick="{{ togglePause }}" style="flex:1;height:54px;border-radius:10px;border:2px solid #1b2430;background:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;gap:12px;align-items:center;justify-content:center">{{ pauseLabel }}<span style="font:12px 'IBM Plex Mono';color:#5b6773">Spacja</span></button>
+<button onClick="{{ addMarker }}" style="flex:1;height:54px;border-radius:10px;border:2px solid #1b2430;background:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;gap:12px;align-items:center;justify-content:center">Zaznacz zdarzenie<span style="font:12px 'IBM Plex Mono';color:#5b6773">M</span></button>
+<button onClick="{{ stopNow }}" style="flex:1;height:54px;border-radius:10px;border:none;background:oklch(0.5 0.17 28);color:#fff;font-size:16px;font-weight:600;cursor:pointer">Sprzeciw pacjenta: przerwij</button>
+<button onClick="{{ askEnd }}" style="height:54px;padding:0 26px;border-radius:10px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:16px;font-weight:600;cursor:pointer">Zakończ</button></div>
+</div></div></sc-if>
+
+<!-- S4 PODSUMOWANIE -->
+<sc-if value="{{ s4 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto;padding:24px 30px;display:flex;flex-direction:column;gap:16px;animation:ncIn .28s ease-out">
+<div style="display:flex;align-items:center;gap:16px;flex:none"><div style="font-size:28px;font-weight:700;flex:1">Podsumowanie sesji · {{ p.name }}</div><span style="font-size:14px;font-weight:600;padding:6px 14px;border-radius:16px;background:{{ rpt.bg }};color:#1b2430">{{ rpt.label }}</span></div>
+<sc-if value="{{ aborted }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:12px 16px;border-radius:8px;background:#fbe4e0;border:2px solid oklch(0.58 0.17 28);font-size:15px"><b>Sesja przerwana:</b> sprzeciw pacjenta. Dane do momentu przerwania zostały zapisane.</div></sc-if>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;flex:none">
+<sc-for list="{{ stats }}" as="s" hint-placeholder-count="5"><div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:14px"><div style="font:500 26px 'IBM Plex Mono'">{{ s.v }}</div><div style="font-size:13px;color:#5b6773;margin-top:2px">{{ s.l }}</div></div></sc-for></div>
+<div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;flex:1 0 auto">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:18px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:6px">DANE · CHECKPOINTY</div>
+<div style="display:grid;grid-template-columns:36px 54px 190px 1fr 130px;gap:8px;padding:6px 0;font:500 11px 'IBM Plex Mono';color:#6a7681;border-bottom:1px solid #e3e8eb"><span>NR</span><span>CZAS</span><span>WYNIK</span><span>POWÓD / DECYZJA</span><span>PO ZMIANIE</span></div>
+<sc-for list="{{ cpRows }}" as="c" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:36px 54px 190px 1fr 130px;gap:8px;padding:9px 0;font-size:14px;border-bottom:1px solid #edf0f2;align-items:center"><b style="font-family:'IBM Plex Mono'">{{ c.n }}</b><span style="font-family:'IBM Plex Mono'">{{ c.t }}</span><span style="display:flex;gap:8px;align-items:center"><i style="width:12px;height:12px;background:{{ c.col }};clip-path:{{ c.clip }}"></i>{{ c.res }}</span><span>{{ c.dec }}</span><span>{{ c.fol }}</span></div></sc-for></div>
+<div style="background:#f4f6f7;border:1px solid #d9dfe3;border-radius:10px;padding:18px;font-size:15px;line-height:1.55"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:6px">INTERPRETACJA (AUTOMATYCZNA, POMOCNICZA)</div>{{ insight }}</div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:18px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:6px">ZDARZENIA · MOŻNA USUNĄĆ BŁĘDNY MARKER</div>
+<sc-for list="{{ markerRows }}" as="m" hint-placeholder-count="2"><div style="display:flex;gap:12px;align-items:center;padding:6px 0;font-size:14px"><span style="font-family:'IBM Plex Mono';width:52px">{{ m.t }}</span><span style="flex:1">{{ m.label }}</span><button onClick="{{ m.del }}" style="height:30px;padding:0 12px;border-radius:6px;border:1px solid #c3cbd1;background:#fff;font-size:13px;cursor:pointer">Usuń</button></div></sc-for>
+<div style="font-size:14px;color:#5b6773">{{ markerEmpty }}</div></div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">NOTATKA TERAPEUTY</div>
+<textarea value="{{ note }}" onInput="{{ setNote }}" disabled="{{ locked }}" placeholder="Obserwacje, reakcja pacjenta, plan na następną sesję…" style="flex:1;min-height:130px;resize:none;border:1px solid #c3cbd1;border-radius:8px;padding:12px;font:15px/1.5 'IBM Plex Sans';user-select:text;outline:none;background:{{ noteBg }}"></textarea>
+<div style="font-size:13px;color:#5b6773;line-height:1.55">Model m-0.4.2 · baseline: dzisiejszy 11:08 · protokół: {{ protoLine }}. Wynik nie stanowi oceny natężenia bólu.</div>
+<div style="display:flex;gap:10px"><button onClick="{{ reportDoc }}" style="flex:1;height:44px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Raport kliniczny</button><button onClick="{{ reportResearch }}" style="flex:1;height:44px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Eksport badawczy</button></div>
+<button onClick="{{ reportFamily }}" style="height:44px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Raport dla rodziny (prosty język)</button>
+<sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;padding:10px 12px;border-radius:8px;background:#eaf5ee;line-height:1.5">Zatwierdzony. Edycja zablokowana. Korekta wymaga adnotacji w dzienniku zmian.</div></sc-if>
+<button onClick="{{ signSave }}" style="height:50px;border-radius:10px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:16px;font-weight:600;cursor:pointer">{{ signLabel }}</button></div></div>
+</div></sc-if>
+
+<!-- S5 ARCHIWUM -->
+<sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:290px minmax(0,1fr);animation:ncIn .28s ease-out">
+<div style="background:#eef2f4;border-right:1px solid #d9dfe3;padding:18px 14px;display:flex;flex-direction:column;gap:10px;min-height:0">
+<input id="ncaq" value="{{ aq }}" onInput="{{ setAq }}" placeholder="Szukaj pacjenta lub rozpoznania" style="height:40px;border:1px solid #c3cbd1;border-radius:8px;padding:0 12px;font:14px 'IBM Plex Sans';outline:none;user-select:text;background:#fff">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:4px 4px 0">PACJENCI · {{ aCount }}</div>
+<div style="display:flex;flex-direction:column;gap:4px;overflow:auto">
+<sc-for list="{{ aPats }}" as="a" hint-placeholder-count="5"><div onClick="{{ a.pick }}" style="padding:10px 12px;border-radius:8px;cursor:pointer;background:{{ a.bg }};box-shadow:{{ a.sh }}" style-hover="background:rgba(255,255,255,.7)"><div style="font-size:15px;font-weight:600">{{ a.name }}</div><div style="font-size:13px;color:#5b6773">{{ a.dx }} · {{ a.n }} sesji</div></div></sc-for></div></div>
+<div style="overflow:auto;padding:22px 28px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-end;gap:16px;flex:none"><div style="flex:1"><div style="font-size:28px;font-weight:700">{{ ap.name }}</div><div style="font-size:14px;color:#5b6773">{{ ap.dx }} · {{ ap.side }} · ostatnie {{ aN }} sesji</div></div>
+<button onClick="{{ exportAll }}" style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Eksportuj historię (zanonimizowaną)</button></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px;flex:none">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">TREND · KLIKNIJ SŁUPEK, ABY WYBRAĆ SESJĘ</div>
+<div style="display:flex;background:#dde3e7;border-radius:8px;padding:2px;gap:2px"><sc-for list="{{ aMetrics }}" as="m" hint-placeholder-count="3"><div onClick="{{ m.pick }}" style="padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:{{ m.bg }};box-shadow:{{ m.sh }}">{{ m.label }}</div></sc-for></div></div>
+<div style="height:140px;display:flex;align-items:flex-end;gap:8px"><sc-for list="{{ aBars }}" as="b" hint-placeholder-count="14"><div onClick="{{ b.pick }}" style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;cursor:pointer"><span style="font:11px 'IBM Plex Mono';color:#4a5560">{{ b.v }}</span><div style="width:100%;height:{{ b.h }}%;background:{{ b.col }};border-radius:3px 3px 0 0;transition:height .3s"></div><span style="font:11px 'IBM Plex Mono';color:{{ b.nc }}">{{ b.n }}</span></div></sc-for></div></div>
+<div style="display:flex;gap:8px;align-items:center;flex:none"><span style="font-size:13px;color:#5b6773;margin-right:4px">Status raportu:</span><sc-for list="{{ aFilters }}" as="f" hint-placeholder-count="4"><div onClick="{{ f.pick }}" style="padding:7px 14px;border-radius:18px;border:1.5px solid {{ f.bd }};background:{{ f.bg }};font-size:14px;font-weight:600;cursor:pointer">{{ f.l }}</div></sc-for></div>
+<div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;overflow:hidden">
+<div style="display:grid;grid-template-columns:44px 70px 70px 90px 90px 1fr;padding:10px 14px;font:500 11px 'IBM Plex Mono';letter-spacing:.05em;color:#6a7681;border-bottom:1px solid #e3e8eb;gap:6px"><span>NR</span><span>DATA</span><span>CHECKP.</span><span>SPRAWDŹ</span><span>WIARYG.</span><span>STATUS RAPORTU</span></div>
+<sc-for list="{{ aRows }}" as="r" hint-placeholder-count="10"><div onClick="{{ r.pick }}" style="display:grid;grid-template-columns:44px 70px 70px 90px 90px 1fr;padding:11px 14px;font-size:14px;gap:6px;border-bottom:1px solid #edf0f2;cursor:pointer;background:{{ r.bg }};align-items:center" style-hover="background:#eef3f5"><span style="font-family:'IBM Plex Mono'">{{ r.no }}</span><span>{{ r.date }}</span><span style="font-family:'IBM Plex Mono'">{{ r.cp }}</span><span style="font-family:'IBM Plex Mono'">{{ r.chk }}</span><span style="font-family:'IBM Plex Mono'">{{ r.valid }}%</span><span style="display:flex;gap:8px;align-items:center"><i style="width:10px;height:10px;background:{{ r.stCol }};clip-path:{{ r.stClip }}"></i>{{ r.status }}</span></div></sc-for>
+<sc-if value="{{ aEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#5b6773;font-size:15px">Brak sesji dla tego filtra.<br><span style="font-size:13px">Zmień status raportu albo wybierz innego pacjenta.</span></div></sc-if></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">SESJA {{ sel.no }} · {{ sel.date }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ sel.chips }}" as="c" hint-placeholder-count="10"><span style="display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:12px;background:#f4f6f7;font:12px 'IBM Plex Mono'"><i style="width:10px;height:10px;background:{{ c.col }};clip-path:{{ c.clip }}"></i>{{ c.n }}</span></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:13px">
+<div style="padding:10px;border-radius:8px;background:#f4f6f7"><b>Raport</b><br>{{ sel.status }}</div>
+<div style="padding:10px;border-radius:8px;background:#f4f6f7"><b>Dane surowe</b><br>EDF+ · {{ sel.size }}</div>
+<div style="padding:10px;border-radius:8px;background:{{ sel.consBg }}"><b>Zgoda</b><br>{{ sel.consText }}</div></div>
+<div style="font-size:14px;line-height:1.5"><b>Notatka:</b> {{ sel.note }}</div>
+<div style="font-size:14px;line-height:1.5;padding:10px;background:#f4f6f7;border-radius:6px">{{ sel.delta }}</div>
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">DZIENNIK ZMIAN</div>
+<div style="font-size:13px;line-height:1.7;color:#3d4955">{{ sel.audit }}</div>
+<div style="display:flex;gap:8px"><button onClick="{{ openRep }}" style="flex:1;height:40px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Otwórz raport</button><button onClick="{{ exportOne }}" style="flex:1;height:40px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:14px;font-weight:600;cursor:pointer">Dane (EDF+)</button></div></div></div>
+</div></div></sc-if>
+
+<!-- S6 PROTOKOŁY -->
+<sc-if value="{{ s6 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:320px minmax(0,1fr);animation:ncIn .28s ease-out">
+<div style="background:#eef2f4;border-right:1px solid #d9dfe3;padding:18px 14px;display:flex;flex-direction:column;gap:6px;overflow:auto">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 6px 6px">PROTOKOŁY TERAPII · UDAR</div>
+<sc-for list="{{ prList }}" as="x" hint-placeholder-count="5"><div onClick="{{ x.pick }}" style="padding:12px;border-radius:8px;cursor:pointer;background:{{ x.bg }};box-shadow:{{ x.sh }}" style-hover="background:rgba(255,255,255,.7)"><div style="font-size:15px;font-weight:600;line-height:1.3">{{ x.name }}</div><div style="font-size:13px;color:#5b6773;margin-top:3px;display:flex;gap:8px;align-items:center"><span style="font-family:'IBM Plex Mono'">{{ x.ver }}</span><span style="padding:2px 8px;border-radius:10px;background:{{ x.stBg }};font-weight:600">{{ x.status }}</span></div></div></sc-for>
+<button onClick="{{ newProt }}" style="margin-top:8px;height:42px;border-radius:8px;border:1px dashed #9aa5ae;background:transparent;font-size:14px;font-weight:600;cursor:pointer;color:#3d4955">+ Nowy protokół</button></div>
+<div style="overflow:auto;padding:26px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-start;gap:16px"><div style="flex:1"><div style="font-size:28px;font-weight:700;line-height:1.2">{{ pr.name }}</div><div style="font-size:15px;color:#5b6773;margin-top:4px">{{ pr.phase }} · {{ pr.dur }} · {{ pr.used }} pacjentów</div><div style="font-size:14px;color:#5b6773;margin-top:2px">Zatwierdził: {{ pr.author }}</div></div>
+<div style="display:flex;gap:8px;align-items:center"><span style="font:500 14px 'IBM Plex Mono';padding:6px 10px;border-radius:6px;background:#e3e8eb">{{ pr.ver }}</span><span style="font-size:14px;font-weight:600;padding:6px 12px;border-radius:14px;background:{{ pr.stBg }}">{{ pr.status }}</span></div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;font-size:15px;line-height:1.6"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:8px">CEL</div>{{ pr.goal }}</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:2px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:8px">ĆWICZENIA</div>
+<sc-for list="{{ prEx }}" as="e" hint-placeholder-count="4"><div style="display:flex;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f2"><span style="font:500 13px 'IBM Plex Mono';color:#6a7681;width:22px">{{ e.i }}</span><span style="flex:1;font-size:15px">{{ e.n }}</span><span style="font:13px 'IBM Plex Mono';color:#4a5560">trudność {{ e.d }}</span></div></sc-for></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:8px">REGUŁY CHECKPOINTÓW</div>
+<sc-for list="{{ prRules }}" as="r" hint-placeholder-count="5"><div style="padding:9px 0;border-bottom:1px solid #edf0f2;font-size:14px;line-height:1.5"><div style="color:#5b6773;font-size:12px">{{ r.k }}</div><b>{{ r.v }}</b></div></sc-for></div></div>
+<div style="background:#fdf3d2;border:1px solid #ecd68a;border-radius:10px;padding:16px;font-size:15px;line-height:1.55"><b>Przeciwwskazania i bezpieczeństwo:</b> {{ pr.contra }}</div>
+<div style="background:#eef2f4;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.55;color:#3d4955">Edycja protokołu tworzy nową wersję. <b>Historyczne sesje zachowują wersję, z którą zostały wykonane.</b></div>
+<div style="display:flex;gap:10px"><button onClick="{{ dupProt }}" style="flex:1;height:46px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Duplikuj jako nową wersję</button><button onClick="{{ useProt }}" style="flex:1;height:46px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Użyj w planie</button></div>
+</div></div></sc-if>
+
+<!-- S7 SPRZĘT -->
+<sc-if value="{{ s7 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:320px minmax(0,1fr);animation:ncIn .28s ease-out">
+<div style="background:#eef2f4;border-right:1px solid #d9dfe3;padding:18px 14px;display:flex;flex-direction:column;gap:6px;overflow:auto">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 6px 6px">URZĄDZENIA</div>
+<sc-for list="{{ eqList }}" as="x" hint-placeholder-count="5"><div onClick="{{ x.pick }}" style="padding:12px;border-radius:8px;cursor:pointer;background:{{ x.bg }};box-shadow:{{ x.sh }};display:flex;gap:12px;align-items:center" style-hover="background:rgba(255,255,255,.7)"><span style="width:14px;height:14px;background:{{ x.col }};clip-path:{{ x.clip }};flex:none"></span><div style="min-width:0"><div style="font-size:15px;font-weight:600">{{ x.name }}</div><div style="font-size:13px;color:#5b6773">{{ x.status }}</div></div></div></sc-for>
+<div style="margin-top:auto;background:#fff;border:1px solid #d9dfe3;border-radius:8px;padding:14px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:8px">MATERIAŁY EKSPLOATACYJNE</div>
+<sc-for list="{{ eqCons }}" as="c" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;font-size:14px;padding:3px 0"><span>{{ c.n }}</span><b style="color:{{ c.col }}">{{ c.v }}</b></div></sc-for></div></div>
+<div style="overflow:auto;padding:26px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-start;gap:16px"><div style="flex:1"><div style="font-size:28px;font-weight:700">{{ eq.name }}</div><div style="font-size:15px;color:#5b6773;margin-top:4px">{{ eq.sub }} · {{ eq.serial }} · {{ eq.fw }}</div></div></div>
+<div style="display:flex;align-items:center;gap:22px;padding:22px 26px;border-radius:12px;background:{{ rd.bg }};border:3px solid {{ rd.col }}"><span style="width:56px;height:56px;background:{{ rd.col }};clip-path:{{ rd.clip }};flex:none"></span><div style="flex:1"><div style="font-size:30px;font-weight:700">{{ rd.label }}</div><div style="font-size:16px;color:#2e3944;margin-top:2px">{{ rd.sub }}</div></div></div>
+<div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:6px">LISTA GOTOWOŚCI</div>
+<sc-for list="{{ rdItems }}" as="i" hint-placeholder-count="8"><div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #edf0f2;font-size:15px"><span style="width:14px;height:14px;background:{{ i.col }};clip-path:{{ i.clip }};flex:none"></span><span style="flex:1">{{ i.t }}</span><b style="font-size:13px;color:{{ i.col2 }}">{{ i.s }}</b></div></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ eqStream }}" style="height:46px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Test strumienia EEG i akcelerometru</button>
+<button onClick="{{ eqCleanDo }}" style="height:46px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Oznacz jako wyczyszczony</button>
+<button onClick="{{ eqBlock }}" style="height:46px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">{{ eqBlockLabel }}</button>
+<button onClick="{{ eqIssue }}" style="height:46px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Zgłoś usterkę</button>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:16px;margin-top:4px"><div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;margin-bottom:6px">DZIENNIK</div>
+<sc-for list="{{ eqLog }}" as="l" hint-placeholder-count="3"><div style="display:flex;gap:12px;padding:6px 0;font-size:13px"><span style="font:12px 'IBM Plex Mono';color:#6a7681;width:50px;flex:none">{{ l.d }}</span><span>{{ l.t }}</span></div></sc-for></div></div></div>
+<sc-if value="{{ eq.isCap }}" hint-placeholder-val="{{ true }}">
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">ZUŻYCIE ELEKTROD · LIMIT 40 UŻYĆ</div>
+<div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px"><sc-for list="{{ eqElec }}" as="e" hint-placeholder-count="8"><div style="padding:12px 8px;border-radius:8px;border:2px solid {{ e.bd }};background:{{ e.bg }};text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:16px;height:16px;background:{{ e.col }};clip-path:{{ e.clip }}"></span><b style="font:600 14px 'IBM Plex Mono'">{{ e.n }}</b><span style="font-size:13px">{{ e.u }} / 40</span><span style="font-size:12px;font-weight:600">{{ e.w }}</span></div></sc-for></div></div></sc-if>
+</div></div></sc-if>
+
+<!-- S8 PACJENCI -->
+<sc-if value="{{ s8 }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:320px minmax(0,1fr);animation:ncIn .28s ease-out">
+<div style="background:#eef2f4;border-right:1px solid #d9dfe3;padding:18px 14px;display:flex;flex-direction:column;gap:6px;overflow:auto">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681;padding:0 6px 6px">PACJENCI · {{ patCount }}</div>
+<sc-for list="{{ patList }}" as="x" hint-placeholder-count="5"><div onClick="{{ x.pick }}" style="padding:12px;border-radius:8px;cursor:pointer;background:{{ x.bg }};box-shadow:{{ x.sh }};opacity:{{ x.op }}" style-hover="background:rgba(255,255,255,.7)"><div style="font-size:15px;font-weight:600;line-height:1.3">{{ x.name }}</div><div style="font-size:13px;color:#5b6773;margin-top:3px">{{ x.sub }}</div></div></sc-for>
+<button onClick="{{ pfNew }}" style="margin-top:8px;height:42px;border-radius:8px;border:1px dashed #9aa5ae;background:transparent;font-size:14px;font-weight:600;cursor:pointer;color:#3d4955">+ Nowy pacjent</button></div>
+<div style="overflow:auto;padding:26px 32px;display:flex;flex-direction:column;gap:16px">
+<sc-if value="{{ pfOpen }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:28px;font-weight:700;line-height:1.2">{{ pfTitle }}</div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:22px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px">
+<sc-for list="{{ pfFields }}" as="f" hint-placeholder-count="9"><label style="grid-column:span {{ f.w }};display:flex;flex-direction:column;gap:6px"><span style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">{{ f.l }}</span><input type="{{ f.type }}" value="{{ f.v }}" onInput="{{ f.set }}" placeholder="{{ f.ph }}" style="height:40px;border:1px solid #c3cbd1;border-radius:8px;padding:0 12px;font:15px 'IBM Plex Sans';outline:none;user-select:text;background:#fff;width:100%;box-sizing:border-box"></label></sc-for></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">SKALE KLINICZNE · WARTOŚCI AKTUALNE (przy edycji poprzednia wartość zostaje jako punkt odniesienia)</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px"><sc-for list="{{ pfScales }}" as="f" hint-placeholder-count="3"><label style="display:flex;flex-direction:column;gap:6px"><span style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">{{ f.l }}</span><input type="{{ f.type }}" value="{{ f.v }}" onInput="{{ f.set }}" style="height:40px;border:1px solid #c3cbd1;border-radius:8px;padding:0 12px;font:15px 'IBM Plex Sans';outline:none;user-select:text;background:#fff;width:100%;box-sizing:border-box"></label></sc-for></div></div>
+<div style="background:#fff;border:1px solid #d9dfe3;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:12px">
+<div style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">ZGODA FORMALNA</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ pfConsentOpts }}" as="o" hint-placeholder-count="3"><div onClick="{{ o.pick }}" style="padding:10px 18px;border-radius:22px;border:2px solid {{ o.bd }};background:{{ o.bg }};font-size:15px;font-weight:600;cursor:pointer">{{ o.l }}</div></sc-for></div>
+<sc-if value="{{ pfRep }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px"><span style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">KTO WYRAZIŁ ZGODĘ (np. córka, Jan K.)</span><input value="{{ pfRepV }}" onInput="{{ pfRepSet }}" style="height:40px;border:1px solid #c3cbd1;border-radius:8px;padding:0 12px;font:15px 'IBM Plex Sans';outline:none;user-select:text;background:#fff;width:100%;box-sizing:border-box"></label></sc-if>
+<sc-if value="{{ pfNoConsent }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:8px;background:#fbe4e0;font-size:15px;line-height:1.5"><b>Bez zgody sesji nie można rozpocząć.</b> Pacjent zostanie oznaczony na liście dnia jako „brak zgody”.</div></sc-if>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px"><sc-for list="{{ pfDates }}" as="f" hint-placeholder-count="2"><label style="display:flex;flex-direction:column;gap:6px"><span style="font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:#6a7681">{{ f.l }}</span><input type="{{ f.type }}" value="{{ f.v }}" onInput="{{ f.set }}" style="height:40px;border:1px solid #c3cbd1;border-radius:8px;padding:0 12px;font:15px 'IBM Plex Sans';outline:none;user-select:text;background:#fff;width:100%;box-sizing:border-box"></label></sc-for></div></div>
+<sc-if value="{{ pfHasErr }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 16px;border-radius:8px;background:#fbe4e0;border:2px solid oklch(0.58 0.17 28);font-size:15px;font-weight:600">{{ pfErr }}</div></sc-if>
+<div style="display:flex;gap:12px;align-items:center;padding-bottom:8px">
+<sc-if value="{{ pfEditing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ pfToggle }}" style="height:48px;padding:0 20px;border-radius:10px;border:2px solid {{ pfToggleBorder }};background:#fff;font-size:15px;font-weight:600;cursor:pointer">{{ pfToggleLabel }}</button></sc-if>
+<div style="flex:1"></div>
+<button onClick="{{ pfCancel }}" style="height:48px;padding:0 24px;border-radius:10px;border:2px solid #1b2430;background:#fff;font-size:16px;font-weight:600;cursor:pointer">Anuluj</button>
+<button onClick="{{ pfSave }}" style="height:48px;padding:0 28px;border-radius:10px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:16px;font-weight:600;cursor:pointer">Zapisz pacjenta</button></div>
+</sc-if>
+</div></div></sc-if>
+
+<!-- toast -->
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:12px 20px;border-radius:10px;background:#1b2430;color:#fff;font-size:15px;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:ncPop .2s ease-out;z-index:5">{{ toast }}</div></sc-if>
+</div></div>
+
+<!-- status bar -->
+<div style="height:30px;flex:none;background:#e9eef0;border-top:1px solid #cdd5da;display:flex;align-items:center;padding:0 16px;gap:20px;font-size:12.5px;color:#4a5560;white-space:nowrap;overflow:hidden">
+<span style="display:flex;gap:7px;align-items:center"><i style="width:8px;height:8px;border-radius:50%;background:{{ barDot }}"></i>{{ barText }}</span><span>Zapisano lokalnie</span><span>Dane nie opuszczają ośrodka</span>
+<div style="flex:1"></div><span style="font-family:'IBM Plex Mono'">⌘K polecenia · Spacja pauza · M marker · ⌘[ wstecz</span></div>
+</div>
+</div>
+
+<!-- command palette -->
+<sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeOverlay }}" style="position:fixed;inset:0;background:rgba(20,30,40,.28);z-index:20;animation:ncFade .15s ease-out;display:flex;justify-content:center;padding-top:110px;align-items:flex-start">
+<div onClick="{{ stop }}" style="width:600px;background:#fff;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.35);overflow:hidden;animation:ncPop .18s ease-out">
+<input id="ncq" value="{{ q }}" onInput="{{ setQ }}" placeholder="Wpisz polecenie lub nazwę ekranu…" style="width:100%;box-sizing:border-box;height:56px;border:none;border-bottom:1px solid #e3e8eb;padding:0 20px;font:18px 'IBM Plex Sans';outline:none;user-select:text">
+<div style="max-height:340px;overflow:auto;padding:8px">
+<sc-for list="{{ cmds }}" as="c" hint-placeholder-count="5"><div onClick="{{ c.run }}" style="display:flex;padding:11px 14px;border-radius:8px;cursor:pointer;font-size:16px;gap:12px" style-hover="background:#eef3f5"><span style="flex:1">{{ c.label }}</span><span style="font:13px 'IBM Plex Mono';color:#6a7681">{{ c.hint }}</span></div></sc-for></div></div></div></sc-if>
+
+<!-- wznowienie sesji -->
+<sc-if value="{{ draftOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:30;background:rgba(20,30,40,.4);animation:ncFade .15s ease-out;display:flex;justify-content:center;align-items:center">
+<div style="width:500px;background:#f7f9fa;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.35);padding:28px;display:flex;flex-direction:column;gap:12px;animation:ncPop .2s ease-out">
+<div style="font-size:21px;font-weight:700">Wykryto niezakończoną sesję</div>
+<div style="font-size:16px;line-height:1.55;color:#2e3944"><b>{{ draftName }}</b> · krok „{{ draftStep }}”<br><span style="color:#5b6773">Ostatni zapis: {{ draftAt }}. Aplikacja została zamknięta przed podpisaniem raportu.</span></div>
+<div style="font-size:14px;line-height:1.5;color:#5b6773">Po wznowieniu pomiar jest wstrzymany. Wznowisz go Spacją.</div>
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px"><button onClick="{{ draftDiscard }}" style="height:46px;padding:0 20px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Odrzuć</button><button onClick="{{ draftResume }}" style="height:46px;padding:0 24px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Wznów sesję</button></div></div></div></sc-if>
+
+<!-- sheet -->
+<sc-if value="{{ sheetEnd }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:20;background:rgba(20,30,40,.28);animation:ncFade .15s ease-out;display:flex;justify-content:center;align-items:flex-start;padding-top:80px">
+<div style="width:480px;background:#f7f9fa;border-radius:0 0 14px 14px;box-shadow:0 24px 80px rgba(0,0,0,.35);padding:26px;display:flex;flex-direction:column;gap:12px;animation:ncSheet .22s ease-out;margin-top:-80px;padding-top:106px">
+<div style="font-size:20px;font-weight:700">Zakończyć sesję?</div>
+<div style="font-size:15px;line-height:1.5;color:#3d4955">Czas: {{ clockT }}. Dane zostaną zapisane lokalnie, a Ty przejdziesz do podsumowania i notatki.</div>
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px"><button onClick="{{ closeOverlay }}" style="height:44px;padding:0 20px;border-radius:8px;border:1px solid #c3cbd1;background:#fff;font-size:15px;font-weight:600;cursor:pointer">Wróć do sesji</button><button onClick="{{ confirmEnd }}" style="height:44px;padding:0 22px;border-radius:8px;border:none;background:oklch(0.45 0.1 195);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Zakończ i podsumuj</button></div></div></div></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 0, max: 0, hist: [0], hi: 0, sel: 2, prep: 0, consent: [false, false, false], elec: Array(this.chNames().length).fill(0), fixP4: false, calib: 0,
+    running: true, t: 0, ex: 0, f: 58, fa: 20, l: 40, r: 55, d: 25, mv: 0, mvCount: 0, ticks: 0, H: { f: [], fa: [], l: [], r: [] }, markers: [], sugg: false, suggDone: false,
+    prSel: 0, eqSel: 0, eqClean: {}, vw: window.innerWidth, vas: 2, sleep: 0, chk: [false, false, false], pos: Array(6).fill(false), ap: 2, as: null, am: 0, aq: '', diff: [3, 2, 3, 2], note: '', palette: false, q: '', sheet: false, toast: null, saved: false, doneIdx: [0, 1], reports: [], lastConn: null, impCfg: { good: '250', bad: '500' }, src: 'demo', link: { state: 'idle', device: null, caps: null, err: null }, devList: null, scanning: false, scanErr: null, calMsg: '', blRes: null, pv: 0, pf: null, pfIdx: null, pfErr: '', pfConfirm: false, draftOffer: null, now: new Date(),
+    cps: [{ n: 1, t: 40, res: 'ok', reason: null, decision: null, follow: null }, { n: 2, t: 112, res: 'ok', reason: null, decision: null, follow: null }, { n: 3, t: 190, res: 'check', reason: null, decision: 'Robię przerwę', follow: 'wróciła' }, { n: 4, t: 262, res: 'ok', reason: null, decision: null, follow: null }, { n: 5, t: 331, res: 'brak', reason: 'Za dużo ruchu', decision: null, follow: null }, { n: 6, t: 392, res: 'ok', reason: null, decision: null, follow: null }],
+    hrSrc: 1, hr: 72, hrH: [], phase: 'ruch', pt: 0, res: null, reason: null, scen: 'auto', dc: false, followUp: null, banner: null, reasonIdx: 0, aborted: false,
+    scope: [true, true, false, false], assent: null, conf: [], commP: 0, selfRep: false, calMv: 0, calPaused: false, calFail: false, baseSel: 0, af: 0, eqBlocked: {}, eqTested: {} };
+
+  patients = [
+    { t: '09:00', name: 'Maria Nowak', age: 72, init: 'MN', dx: 'Udar niedokrwienny, lewa półkula', week: 6, side: 'niedowład prawostronny', comm: 'afazja czuciowa', consent: 'przedstawiciel ✓', alert: 'Bez uwag.', sessionNo: '18 z 24', lastNote: 'Dobra współpraca, bez dyskomfortu.', scales: [[28, 33, 66], [55, 65, 100], [2, 1, 10]], ex: ['Przenoszenie kostek', 'Wyprost łokcia', 'Sięganie po przedmiot', 'Trening bilateralny'], base: 'done' },
+    { t: '10:00', name: 'Tadeusz Wiśniewski', age: 58, init: 'TW', dx: 'Krwotok śródmózgowy, prawa półkula', week: 3, side: 'niedowład lewostronny', comm: 'mowa zachowana', consent: 'pacjent ✓', alert: 'Kontrola ciśnienia przed sesją.', sessionNo: '8 z 24', lastNote: 'Szybkie zmęczenie po 7 minutach.', scales: [[18, 24, 66], [45, 55, 100], [3, 3, 10]], ex: ['Przenoszenie kostek', 'Wyprost łokcia', 'Sięganie po przedmiot', 'Trening bilateralny'], base: 'done' },
+    { t: '11:15', name: 'Anna Kowalska', age: 67, init: 'AK', dx: 'Udar niedokrwienny, lewa półkula', week: 5, side: 'niedowład prawostronny, twarz po prawej', comm: 'afazja ruchowa: tryb piktogramów', consent: 'przedstawiciel (córka) ✓', rep: 'córka, Jan K. · przedstawiciel ustawowy', alert: 'Ból barku po stronie niedowładnej (VAS 3). Unikaj odwodzenia powyżej 90°.', sessionNo: '14 z 24', lastNote: 'Spokojna sesja. Grymas przy rotacji przedramienia w 3. ćwiczeniu. Poproszono rodzinę o ćwiczenia domowe.', scales: [[34, 41, 66], [60, 70, 100], [5, 3, 10]], ex: ['Przenoszenie kostek (chwyt)', 'Wyprost łokcia przy stole', 'Podnoszenie ręki do przodu', 'Rotacja przedramienia'], base: 'next' },
+    { t: '12:30', name: 'Piotr Duda', age: 61, init: 'PD', dx: 'Krwotok podpajęczynówkowy', week: 4, side: 'niedowład lewostronny', comm: 'mowa zachowana', consent: 'pacjent ✓', alert: 'Zawroty głowy przy zmianie pozycji.', sessionNo: '10 z 24', lastNote: 'Stabilnie, motywowany.', scales: [[25, 31, 66], [50, 60, 100], [1, 1, 10]], ex: ['Przenoszenie kostek', 'Wyprost łokcia', 'Sięganie po przedmiot', 'Trening bilateralny'], base: 'wait' },
+    { t: '13:30', name: 'Ewa Mazur', age: 74, init: 'EM', dx: 'Udar niedokrwienny, prawa półkula', week: 2, side: 'niedowład lewostronny', comm: 'dezorientacja, prosty język', consent: 'BRAK, wymagana zgoda przedstawiciela', alert: 'Nie rozpoczynaj bez zgody.', sessionNo: '3 z 24', lastNote: 'Pierwsze sesje bez EEG.', scales: [[10, 12, 66], [35, 40, 100], [2, 2, 10]], ex: ['Przenoszenie kostek', 'Wyprost łokcia', 'Sięganie po przedmiot', 'Trening bilateralny'], base: 'noconsent' },
+  ];
+
+  today() { return new Date().toISOString().slice(0, 10); }
+  persist(patch) { if (window.neurocue) window.neurocue.save(patch).catch((e) => console.error('zapis nieudany', e)); }
+  componentDidMount() {
+    if (window.neurocue) window.neurocue.load().then((d) => {
+      const up = {};
+      if (Array.isArray(d.reports)) up.reports = d.reports;
+      if (d.settings && d.settings.impGood > 0 && d.settings.impBad > d.settings.impGood) up.impCfg = { good: String(d.settings.impGood), bad: String(d.settings.impBad) };
+      if (Array.isArray(d.patients) && d.patients.length) { this.patients = d.patients; up.pv = 1; if (this.patients[this.state.sel] && this.patients[this.state.sel].inactive) up.sel = this.firstActive(); }
+      if (d.draft && d.draft.state && this.patients[d.draft.state.sel]) {
+        const ds = d.draft.state, step = ['Dzień', 'Pacjent', 'Przygotowanie', 'Sesja', 'Podsumowanie'][Math.min(ds.screen, 4)] || 'Sesja';
+        up.draftOffer = { data: ds, name: this.patients[ds.sel].name, step, at: new Date(d.draft.savedAt).toLocaleString('pl-PL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) }; this.hasDraft = true;
+      }
+      if (d.doneDay === this.today() && Array.isArray(d.doneIdx)) up.doneIdx = Array.from(new Set(this.state.doneIdx.concat(d.doneIdx)));
+      this.setState(up);
+    }).catch((e) => console.error('odczyt nieudany', e));
+    this.iv = setInterval(() => this.tick(), 500);
+    if (window.neurocue && window.neurocue.eeg) this.offEeg = window.neurocue.eeg.onEvent((ev) => this.onEeg(ev));
+    this.kd = (e) => this.onKey(e);
+    window.addEventListener('keydown', this.kd);
+    this.rs = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this.rs);
+    this.bu = () => { if (this.state.max >= 2 && !this.state.saved && !this.state.draftOffer) this.saveDraft(true); }; window.addEventListener('beforeunload', this.bu);
+  }
+  componentWillUnmount() { clearInterval(this.iv); if (this.offEeg) this.offEeg(); window.removeEventListener('keydown', this.kd); window.removeEventListener('resize', this.rs); window.removeEventListener('beforeunload', this.bu); }
+
+  rnd() { return Math.random(); }
+  clamp(v) { return Math.max(0, Math.min(100, v)); }
+
+  reasons = [['Za dużo ruchu', 'Poczekaj na bezruch pacjenta i powtórz checkpoint', 'ruch'], ['Słaby kontakt C3/C4', 'Popraw elektrody C3 i C4, potem powtórz checkpoint', 'kontakt'], ['Za krótkie czyste okno', 'Powtórz checkpoint i poproś pacjenta o bezruch', 'okno'], ['Sygnał poza zakresem modelu', 'Powtórz checkpoint; jeśli się utrzymuje, oceń klinicznie', 'model'], ['Kalibracja nieaktualna', 'Wykonaj ponowną kalibrację', 'kalib']];
+  outcome(s, n) {
+    const seq = ['ok', 'ok', 'check', 'ok', 'brak', 'ok'];
+    let r = s.scen === 'auto' ? seq[(n - 1) % seq.length] : s.scen === 'ok' ? 'ok' : s.scen === 'check' ? 'check' : 'brak';
+    if (s.followUp) { if (s.scen === 'check') r = 'check'; else if (s.scen === 'none') r = 'brak'; else r = 'ok'; }
+    return { res: r, reason: r === 'brak' ? this.reasons[s.reasonIdx % 5][0] : null };
+  }
+  tick() {
+    const s = this.state; const up = { now: new Date() };
+    if (s.max >= 2 && !s.saved && !s.draftOffer && (this.dn = (this.dn || 0) + 1) % 6 === 0) this.saveDraft(false);
+    if (s.toast && Date.now() > this.toastUntil) up.toast = null;
+    if (s.src !== 'demo') { this.devSync(s); if (s.screen === 2) this.devPrep(s, up); }
+    if (s.src === 'demo' && s.screen === 2 && s.prep === 3) up.elec = s.elec.map((v, i) => Math.min(i === 5 && !s.fixP4 ? 70 : 100, v + (4 + this.rnd() * 16) * (i % 3 === 0 ? 1.4 : 1)));
+    if (s.src === 'demo' && s.screen === 2 && s.prep === 4 && s.calib < 90) {
+      if (s.calMv > 0) up.calMv = s.calMv - 1;
+      else if (!s.calPaused && s.calib >= 30) { up.calMv = 4; up.calPaused = true; }
+      else up.calib = Math.min(90, s.calib + 3);
+    }
+    if (s.src !== 'demo' && s.screen === 3 && s.running && !s.dc) this.devSession(s, up);
+    else if (s.screen === 3 && s.running && !s.dc) {
+      const DUR = { ruch: 8, stab: 6, pomiar: 8 };
+      let phase = s.phase, pt = s.pt + 1;
+      up.t = s.t + .5; up.ticks = s.ticks + 1;
+      { const tgt = (!s.dc && s.phase === 'wynik' && s.res === 'check') ? 88 : s.phase === 'ruch' ? 78 : 71; const hr = Math.round((s.hr + (tgt - s.hr) * .25 + (this.rnd() - .5) * 3) * 10) / 10; up.hr = hr; up.hrH = s.hrH.concat(hr).slice(-120); }
+      if (phase === 'ruch' || phase === 'stab' || phase === 'pomiar') {
+        if (pt >= DUR[phase]) {
+          if (phase === 'ruch') { phase = 'stab'; pt = 0; }
+          else if (phase === 'stab') { phase = 'pomiar'; pt = 0; }
+          else {
+            this.finishCp(s, this.outcome(s, s.cps.length + 1), up);
+            phase = 'wynik'; pt = 0;
+          }
+        }
+      } else if (phase === 'wynik' && s.res === 'ok' && pt >= 8) { phase = 'ruch'; pt = 0; up.res = null; }
+      up.phase = phase; up.pt = pt;
+    }
+    this.setState(up);
+  }
+  decide(label) {
+    const s = this.state; if (s.res !== 'check' || s.phase !== 'wynik') return;
+    const P = this.patients[s.sel], cps = s.cps.slice(), i = cps.length - 1;
+    cps[i] = { ...cps[i], decision: label, falseAlert: label === 'To był fałszywy alert' };
+    const fu = ['Zmniejszam obciążenie', 'Robię przerwę', 'Sprawdzam ułożenie'].includes(label) ? label : null;
+    const up = { cps, followUp: fu, phase: 'ruch', pt: 0, res: null, banner: null };
+    if (label === 'Zmniejszam obciążenie') up.diff = s.diff.map((v, j) => j === s.ex ? Math.max(1, v - 1) : v);
+    if (label === 'Kończę ćwiczenie') up.ex = Math.min(P.ex.length - 1, s.ex + 1);
+    this.setState(up); this.toast('Zapisano decyzję: ' + label);
+  }
+  // ===== Pacjenci: zapis, edycja, dezaktywacja =====
+  savePatients() { this.persist({ patients: this.patients }); }
+  firstActive() { const i = this.patients.findIndex(q => !q.inactive); return i < 0 ? 0 : i; }
+  blankPf() { return { name: '', age: '', t: '09:00', dx: '', week: '', side: '', comm: 'mowa zachowana', plan: '24', alert: '', fma: '', barthel: '', vas: '', consentBy: 'patient', repName: '', consentDate: '', consentUntil: '' }; }
+  consentBy(q) { return q.consentBy || (q.base === 'noconsent' ? 'none' : q.rep ? 'rep' : 'patient'); }
+  pfFrom(q) {
+    const sc = q.scales || [[0, 0], [0, 0], [0, 0]];
+    return { name: q.name, age: String(q.age), t: q.t, dx: q.dx, week: String(q.week), side: q.side, comm: q.comm, plan: String(parseInt(String(q.sessionNo).split('z')[1]) || 24), alert: q.alert === 'Bez uwag.' ? '' : q.alert,
+      fma: String(sc[0][1]), barthel: String(sc[1][1]), vas: String(sc[2][1]), consentBy: this.consentBy(q), repName: q.rep ? q.rep.split(' · ')[0] : '', consentDate: q.consentDate || '', consentUntil: q.consentUntil || '' };
+  }
+  pfOpenFor(i) { this.setState({ pfIdx: i, pf: i === -1 ? this.blankPf() : this.pfFrom(this.patients[i]), pfErr: '', pfConfirm: false, screen: 8 }); }
+  savePf() {
+    const s = this.state, f = s.pf, idx = s.pfIdx, old = idx >= 0 ? this.patients[idx] : null;
+    const num = (v, lo, hi) => { const t = String(v).trim().replace(',', '.'), n = Number(t); return t !== '' && Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
+    const name = f.name.trim().replace(/\s+/g, ' '), age = num(f.age, 0, 120), week = num(f.week, 0, 520), plan = num(f.plan, 1, 200);
+    const sc = [['fma', 66], ['barthel', 100], ['vas', 10]].map(([k, max]) => String(f[k]).trim() === '' ? 0 : num(f[k], 0, max));
+    const dupe = this.patients.some((q, i) => i !== idx && !q.inactive && q.name.toLowerCase() === name.toLowerCase());
+    const sameConsent = old && !old.consentDate && this.pfFrom(old).consentBy === f.consentBy;
+    let err = '';
+    if (!name) err = 'Podaj imię i nazwisko.';
+    else if (dupe) err = 'Pacjent o tym imieniu i nazwisku już jest na liście.';
+    else if (age == null) err = 'Wiek: liczba od 0 do 120.';
+    else if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(f.t.trim())) err = 'Godzina w formacie GG:MM, np. 09:30.';
+    else if (!f.dx.trim()) err = 'Podaj rozpoznanie.';
+    else if (week == null) err = 'Tydzień po udarze: liczba od 0 do 520.';
+    else if (plan == null) err = 'Planowana liczba sesji: liczba od 1 do 200.';
+    else if (sc.includes(null)) err = 'Skale: FMA-UE 0–66, Barthel 0–100, VAS 0–10.';
+    else if (f.consentBy === 'rep' && !f.repName.trim()) err = 'Podaj, kto wyraził zgodę (np. córka, Jan K.).';
+    else if (f.consentBy !== 'none' && !f.consentDate && !sameConsent) err = 'Podaj datę wyrażenia zgody.';
+    else if (f.consentUntil && f.consentDate && f.consentUntil < f.consentDate) err = 'Zgoda nie może wygasać przed datą jej wyrażenia.';
+    if (err) { this.setState({ pfErr: err }); return; }
+    const by = f.consentBy, repName = f.repName.trim();
+    const common = {
+      t: f.t.trim(), name, age, init: name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join(''), dx: f.dx.trim(), week, side: f.side.trim() || 'brak danych', comm: f.comm.trim() || 'brak danych',
+      alert: f.alert.trim() || 'Bez uwag.', consentBy: by, consentDate: f.consentDate || undefined, consentUntil: f.consentUntil || undefined,
+      consent: by === 'none' ? 'BRAK, wymagana zgoda przedstawiciela' : by === 'rep' ? 'przedstawiciel (' + repName + ') ✓' : 'pacjent ✓',
+      rep: by === 'rep' ? repName + ' · przedstawiciel ustawowy' : undefined,
+    };
+    const maxes = [66, 100, 10];
+    let next;
+    if (old) {
+      const n = parseInt(old.sessionNo) || 1;
+      next = { ...old, ...common, sessionNo: n + ' z ' + plan, scales: sc.map((v, i) => [old.scales[i][1] !== v ? old.scales[i][1] : old.scales[i][0], v, maxes[i]]),
+        base: by === 'none' ? 'noconsent' : old.base === 'noconsent' ? 'wait' : old.base };
+    } else {
+      next = { ...common, sessionNo: '1 z ' + plan, lastNote: 'Pierwsza wizyta, brak wcześniejszych notatek.', scales: sc.map((v, i) => [v, v, maxes[i]]),
+        ex: ['Przenoszenie kostek (chwyt)', 'Wyprost łokcia przy stole', 'Rotacja przedramienia', 'Trening bilateralny'], base: by === 'none' ? 'noconsent' : 'wait', custom: true };
+    }
+    const arr = this.patients.slice(); let at = idx;
+    if (old) arr[idx] = next; else { arr.push(next); at = arr.length - 1; }
+    this.patients = arr; this.savePatients();
+    this.setState({ pv: s.pv + 1, pf: null, pfIdx: null, pfErr: '', sel: at });
+    this.toast((old ? 'Zapisano zmiany: ' : 'Dodano pacjenta: ') + name);
+  }
+  togglePatientActive(i) {
+    const s = this.state, q = this.patients[i];
+    if (!q.inactive && !s.pfConfirm) { this.setState({ pfConfirm: true }); return; }
+    const arr = this.patients.slice(); arr[i] = { ...q, inactive: !q.inactive }; this.patients = arr; this.savePatients();
+    const up = { pv: s.pv + 1, pfConfirm: false, pf: null, pfIdx: null };
+    if (arr[i].inactive && s.sel === i) up.sel = this.firstActive();
+    this.setState(up); this.toast(arr[i].inactive ? q.name + ': dezaktywowano (historia zostaje w archiwum)' : q.name + ': przywrócono');
+  }
+
+  // ===== Szkic trwającej sesji (odporność na awarię i zamknięcie okna) =====
+  draftState() {
+    const s = this.state, out = {};
+    for (const k of Object.keys(s)) if (!['palette', 'q', 'sheet', 'toast', 'now', 'vw', 'saved', 'reports', 'doneIdx', 'draftOffer', 'pf', 'pfIdx', 'pfErr', 'pfConfirm', 'pv', 'link', 'devList', 'scanning', 'scanErr'].includes(k)) out[k] = s[k];
+    return out;
+  }
+  draftWorthy() { const s = this.state; return s.screen >= 2 && s.screen <= 4 && !s.saved && !s.draftOffer; }
+  saveDraft(sync) {
+    if (!window.neurocue) return;
+    const payload = { draft: { savedAt: new Date().toISOString(), state: this.draftState() } };
+    this.hasDraft = true;
+    if (sync) window.neurocue.saveSync(payload); else this.persist(payload);
+  }
+  clearDraft() { if (this.hasDraft || (this.state.draftOffer)) { this.hasDraft = false; this.persist({ draft: null }); } }
+  resumeDraft() {
+    const o = this.state.draftOffer; if (!o) return;
+    const dev = o.data.src && o.data.src !== 'demo';
+    this.setState({ ...o.data, running: false, palette: false, sheet: false, draftOffer: null, now: new Date(), ...(dev ? { dc: true } : {}) });
+    if (dev) this.lastConn = o.data.lastConn || this.lastConn;
+    this.hasDraft = true; this.toast('Wznowiono sesję. Naciśnij Spację, aby kontynuować pomiar.');
+  }
+  discardDraft() { this.setState({ draftOffer: null }); this.hasDraft = false; this.persist({ draft: null }); this.toast('Odrzucono niezakończoną sesję'); }
+
+  // ===== Eksport: raporty PDF i CSV =====
+  esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  reportShell(title, body, big) {
+    return '<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><title>' + this.esc(title) + '</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">'
+      + '<style>*{box-sizing:border-box}body{font-family:"IBM Plex Sans",sans-serif;color:#1b2430;font-size:' + (big ? '14.5pt' : '10.5pt') + ';line-height:1.5;margin:0}'
+      + 'h1{font-size:' + (big ? '24pt' : '19pt') + ';margin:0 0 4px}h2{font-size:' + (big ? '16pt' : '12pt') + ';margin:20px 0 6px;border-bottom:1.5px solid #1b2430;padding-bottom:3px}'
+      + '.mono{font-family:"IBM Plex Mono",monospace}.muted{color:#5b6773}.row{display:flex;gap:10px;flex-wrap:wrap}.card{border:1px solid #cdd5da;border-radius:8px;padding:8px 12px;min-width:120px}'
+      + '.card b{display:block;font-size:16pt}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:5px 6px;border-bottom:1px solid #dde3e7;vertical-align:top}th{font-size:8.5pt;color:#5b6773;letter-spacing:.06em}'
+      + '.sig{margin-top:36px;display:flex;gap:40px}.sig div{flex:1;border-top:1px solid #1b2430;padding-top:4px;font-size:9pt;color:#5b6773}.draft{color:#7a4a00;background:#fdf3d2;padding:6px 10px;border-radius:6px;font-weight:600}.note{border-left:4px solid #1b2430;padding:4px 12px;background:#f4f6f7}'
+      + '.foot{margin-top:24px;font-size:8.5pt;color:#5b6773}</style></head><body>' + body + '</body></html>';
+  }
+  reportCtx(s) {
+    const P = this.patients[s.sel], rp = (s.saved && [...s.reports].reverse().find(r => r.pi === s.sel)) || this.buildReport(s), at = new Date(rp.at);
+    return { P, rp, date: at.toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric' }), time: at.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }), mins: Math.max(1, Math.round(rp.durSec / 60)), ther: 'mgr Ewa Zielińska, fizjoterapeutka neurologiczna' };
+  }
+  srcLine(rp) {
+    const e = (x) => this.esc(x);
+    if (!rp.src || rp.src === 'demo') return '<span class="draft">DANE DEMONSTRACYJNE: sygnał symulowany, to nie jest pomiar pacjenta.</span>';
+    if (rp.src === 'sim') return '<span class="draft">SYGNAŁ TESTOWY z symulatora czepka, to nie jest pomiar pacjenta.</span>';
+    return 'Źródło sygnału: <b>BrainAccess ' + e(rp.device && rp.device.model) + '</b> (' + e(rp.device && rp.device.name) + '), ' + (rp.device ? rp.device.channels.length + ' kanałów (' + e(rp.device.channels.join(', ')) + '), ' + rp.device.fs + ' Hz' : '') + '.';
+  }
+  clinicalHtml(s) {
+    const e = (x) => this.esc(x), { P, rp, date, time, mins, ther } = this.reportCtx(s);
+    const resL = { ok: 'Stabilnie', check: 'Sprawdź pacjenta', brak: 'Brak pomiaru' }, folL = { 'wróciła': 'reakcja wróciła w stronę baseline’u', 'utrzymuje': 'odchylenie się utrzymuje' };
+    const rows = rp.cps.map(c => '<tr><td class="mono">' + c.n + '</td><td class="mono">' + this.fmt(c.t) + '</td><td>' + resL[c.res] + '</td><td>' + e(c.res === 'brak' ? c.reason : c.res === 'check' ? (c.decision || 'brak decyzji') + (c.falseAlert ? ' (fałszywy alert)' : '') : '—') + '</td><td>' + e(c.follow ? folL[c.follow] : '—') + '</td></tr>').join('');
+    const mk = rp.markers.length ? rp.markers.map(m => '<tr><td class="mono">' + this.fmt(m.t) + '</td><td>' + e(m.label) + '</td></tr>').join('') : '<tr><td class="muted">Brak zaznaczonych zdarzeń.</td></tr>';
+    const names = ['FMA-UE (ręka)', 'Indeks Barthel', 'Ból barku (VAS, mniej = lepiej)'];
+    const scales = P.scales.map(([a, b, max], i) => '<tr><td>' + names[i] + '</td><td class="mono">' + a + ' → ' + b + ' / ' + max + '</td></tr>').join('');
+    const ex = P.ex.slice(0, rp.exDone).map((n, i) => e(n) + ' (trudność ' + rp.diff[i] + ')').join('; ');
+    const body = '<h1>Raport kliniczny sesji</h1><div class="muted">NeuroCue Clinic · ' + date + ', ' + time + '</div>'
+      + '<p>' + (s.saved ? '<b>Status: zatwierdzony.</b>' : '<span class="draft">Status: roboczy, raport nie został jeszcze zatwierdzony.</span>') + (rp.aborted ? ' <span class="draft">Sesja przerwana (sprzeciw pacjenta).</span>' : '') + '</p>'
+      + '<h2>Pacjent</h2><table><tr><td><b>' + e(P.name) + '</b>, ' + P.age + ' l.</td><td>' + e(P.dx) + ' · ' + P.week + '. tydzień</td></tr><tr><td>' + e(P.side) + '</td><td>Komunikacja: ' + e(P.comm) + '</td></tr><tr><td colspan="2">Uwaga kliniczna: ' + e(P.alert) + '</td></tr><tr><td colspan="2">Zgoda: ' + e(P.consent) + '</td></tr></table>'
+      + '<h2>Przebieg</h2><div class="row"><div class="card"><b>' + mins + ' min</b>czas sesji</div><div class="card"><b>' + rp.cp + '</b>checkpointów</div><div class="card"><b>' + (rp.cp - Math.round(rp.rej * rp.cp / 100)) + ' / ' + rp.cp + '</b>wiarygodnych</div><div class="card"><b>' + rp.chk + '</b>sprawdź pacjenta</div></div>'
+      + '<p>Wykonane ćwiczenia: ' + (ex || '—') + '.</p>'
+      + '<p>' + this.srcLine(rp) + '</p>'
+      + (rp.src === 'device' ? '<p class="muted">Wskaźniki (skupienie, zmęczenie, obciążenie, relaksacja) są eksperymentalne, liczone względem baseline’u z dzisiejszej kalibracji; nie są zwalidowanym modelem klinicznym.</p>' : '')
+      + '<h2>Checkpointy</h2><table><tr><th>NR</th><th>CZAS</th><th>WYNIK</th><th>DECYZJA / POWÓD</th><th>PO DECYZJI</th></tr>' + (rows || '<tr><td colspan="5" class="muted">Brak checkpointów.</td></tr>') + '</table>'
+      + '<h2>Zdarzenia</h2><table>' + mk + '</table>'
+      + '<h2>Skale kliniczne (poprzednio → teraz)</h2><table>' + scales + '</table>'
+      + '<h2>Notatka terapeuty</h2><div class="note">' + (e(rp.note).replace(/\n/g, '<br>') || '<span class="muted">Brak notatki.</span>') + '</div>'
+      + '<div class="sig"><div>' + e(ther) + '<br>podpis</div><div>Lekarz prowadzący<br>podpis</div></div>'
+      + '<p class="foot">Sygnał „Sprawdź pacjenta” oznacza zmianę reakcji, nie jest pomiarem bólu. Decyzję kliniczną zawsze podejmuje terapeuta.</p>';
+    return this.reportShell('Raport kliniczny · ' + P.name, body, false);
+  }
+  familyHtml(s) {
+    const e = (x) => this.esc(x), { P, rp, date, mins, ther } = this.reportCtx(s);
+    const how = rp.aborted ? 'Sesję zakończyliśmy wcześniej, ponieważ pacjent dał znać, że nie chce kontynuować. To jest w porządku. Zdanie pacjenta jest dla nas najważniejsze.'
+      : rp.chk === 0 ? 'Ćwiczenia przebiegły spokojnie. Nie było potrzeby zmieniać planu.'
+        : 'W ' + rp.chk + (rp.chk === 1 ? ' momencie' : ' momentach') + ' terapeutka zrobiła krótką przerwę albo zmieniła ćwiczenie, żeby pacjent się nie przemęczył. To normalna część sesji.';
+    const body = '<h1>Dzisiejsza sesja</h1><div class="muted">' + e(P.name) + ' · ' + date + '</div>' + (rp.src === 'device' ? '' : '<p class="draft">Ćwiczenia w trybie ' + (rp.src === 'sim' ? 'testowym' : 'demonstracyjnym') + ': ten dokument nie opisuje prawdziwej sesji.</p>')
+      + '<h2>Co robiliśmy</h2><p>Pacjent ćwiczył rękę. Miał na głowie lekki czepek, który tylko odczytuje sygnały z głowy. Niczego nie robi pacjentowi. Pomaga nam zobaczyć, kiedy ćwiczenie robi się zbyt męczące.</p>'
+      + '<p><b>' + rp.exDone + ' z ' + P.ex.length + '</b> ćwiczeń · około <b>' + mins + ' min</b></p>'
+      + '<h2>Jak poszło</h2><p>' + how + '</p>'
+      + (rp.note && rp.note.trim() ? '<h2>Od terapeutki</h2><div class="note">' + e(rp.note).replace(/\n/g, '<br>') + '</div>' : '')
+      + '<h2>W domu</h2><p class="muted">Zalecenia wpisze terapeutka:</p><p>……………………………………………………………………</p><p>……………………………………………………………………</p>'
+      + '<h2>Kiedy zadzwonić</h2><p>Jeśli po sesji pacjent skarży się na ból, zawroty głowy albo jest bardzo zmęczony, skontaktuj się z nami lub z lekarzem.</p>'
+      + '<div class="sig"><div>' + e(ther) + '</div></div>'
+      + '<p class="foot">Ten dokument nie zastępuje porady lekarza.</p>';
+    return this.reportShell('Podsumowanie sesji · ' + P.name, body, true);
+  }
+  async exportPdf(kind) {
+    const s = this.state;
+    if (!window.neurocue) { this.toast('Eksport PDF działa w aplikacji desktopowej'); return; }
+    const P = this.patients[s.sel], html = kind === 'family' ? this.familyHtml(s) : this.clinicalHtml(s);
+    const name = (kind === 'family' ? 'Podsumowanie dla rodziny' : 'Raport kliniczny') + ' - ' + P.name + ' - ' + new Date().toISOString().slice(0, 10);
+    try {
+      const r = await window.neurocue.exportPdf(html, name);
+      if (r && r.ok) this.toast('Zapisano PDF: ' + r.path.split(/[\\/]/).pop()); else if (!r || !r.canceled) this.toast('Nie udało się zapisać PDF');
+    } catch (err) { console.error(err); this.toast('Błąd eksportu PDF'); }
+  }
+  pseudo(i) {
+    const q = this.patients[i];
+    if (!q.pseudo) { const arr = this.patients.slice(); arr[i] = { ...q, pseudo: 'P-' + Math.random().toString(36).slice(2, 8).toUpperCase() }; this.patients = arr; this.savePatients(); }
+    return this.patients[i].pseudo;
+  }
+  csvOf(reports, pi) {
+    const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"', pid = this.pseudo(pi);
+    const lines = [['pacjent_id', 'sesja', 'czas_sesji_s', 'checkpoint', 'czas_checkpointu_s', 'wynik', 'powod_braku_pomiaru', 'decyzja', 'po_decyzji', 'sesja_przerwana', 'zrodlo_sygnalu', 'skupienie', 'zmeczenie', 'obciazenie', 'relaksacja', 'erd_c3', 'erd_c4'].join(',')];
+    reports.forEach((r, k) => r.cps.forEach(c => lines.push([pid, r.__no || k + 1, r.durSec, c.n, Math.round(c.t), c.res, c.reason || '', c.decision || '', c.follow || '', r.aborted ? 'tak' : 'nie', r.src || 'demo', ...['focus', 'fatigue', 'load', 'relax'].map(k => c.idx ? Math.round(c.idx[k]) : ''), ...['C3', 'C4'].map(k => c.idx && c.idx.erd && c.idx.erd[k] != null ? Math.round(c.idx.erd[k]) : '')].map(q).join(','))));
+    return lines.join('\r\n');
+  }
+  async exportCsv(reports, pi, label) {
+    if (!window.neurocue) { this.toast('Eksport działa w aplikacji desktopowej'); return; }
+    if (!reports.length) { this.toast('Brak zapisanych sesji do eksportu'); return; }
+    try {
+      const r = await window.neurocue.saveText(this.csvOf(reports, pi), label + ' - ' + this.pseudo(pi) + '.csv');
+      if (r && r.ok) this.toast('Zapisano zanonimizowany CSV (bez imienia, nazwiska i dat)'); else if (!r || !r.canceled) this.toast('Nie udało się zapisać pliku');
+    } catch (err) { console.error(err); this.toast('Błąd eksportu'); }
+  }
+  exportReal(pi, onlyId) {
+    const list = this.archSessions(pi).filter(x => x.real && (!onlyId || x.rid === onlyId)).map(x => ({ ...this.state.reports.find(r => r.id === x.rid), __no: x.no }));
+    this.exportCsv(list, pi, onlyId ? 'Sesja ' + list[0].__no : 'Historia sesji');
+  }
+  // ===== Czepek EEG (most Pythona) =====
+  elecReady(s) {
+    if (s.src === 'demo') return s.elec.every((v) => v >= 90);
+    const names = this.chNames(), n = names.length;
+    if (s.elec.length !== n) return false;
+    const need = Math.ceil(0.75 * n), good = s.elec.filter((v) => v >= 90).length;
+    return good >= need && ['C3', 'C4'].every((c) => !names.includes(c) || s.elec[names.indexOf(c)] >= 90);
+  }
+  elecReport(s, imp) {
+    const names = this.chNames(), n = names.length, need = Math.ceil(0.75 * n);
+    const good = s.elec.filter((v) => v >= 90).length;
+    const fmt = (arr, max) => arr.slice(0, max).join(', ') + (arr.length > max ? ' i ' + (arr.length - max) + ' innych' : '');
+    const label = (i) => names[i] + (imp && imp.kohm[i] != null ? ' (' + Math.round(imp.kohm[i]) + ' kΩ)' : '');
+    const weak = names.map((nm, i) => (s.elec[i] < 90 ? i : -1)).filter((i) => i >= 0).sort((a, b) => (imp ? (imp.kohm[b] == null ? 0 : imp.kohm[b]) - (imp.kohm[a] == null ? 0 : imp.kohm[a]) : 0));
+    const motorBad = ['C3', 'C4'].filter((c) => names.includes(c) && s.elec[names.indexOf(c)] < 90);
+    if (!imp) return { msg: 'Sprawdzam impedancję…', need: 'trwa sprawdzanie elektrod', ready: false, good, n };
+    if (this.elecReady(s)) return { msg: good === n ? 'Wszystkie elektrody w normie' : 'Gotowe do kalibracji: ' + good + ' z ' + n + ' w normie', need: '', ready: true, good, n, weakTxt: weak.length ? 'Słabsze: ' + fmt(weak.map(label), 4) : '' };
+    if (motorBad.length) return { msg: 'Popraw kluczowe elektrody ' + motorBad.join(' i ') + ' (z nich liczymy desynchronizację ruchową)', need: 'popraw elektrody ' + motorBad.join(' i '), ready: false, good, n };
+    return { msg: 'Za mało dobrych kanałów: ' + good + ' z ' + n + ', potrzeba min. ' + need + '. Najsłabsze: ' + fmt(weak.map(label), 4), need: 'popraw elektrody: ' + fmt(weak.map(label), 3), ready: false, good, n };
+  }
+  headLayout(names) {
+    // pozycje na rysunku z instrukcji czapki BrainAccess (kolumna, wiersz); puste wiersze/kolumny są zwijane
+    const P = { Fp1: [3, 0], Fp2: [7, 0], AF3: [3, 1], AFz: [5, 1], AF4: [7, 1], F7: [1, 2], F3: [3, 2], Fz: [5, 2], F4: [7, 2], F8: [9, 2], FC5: [2, 3], FC1: [4, 3], FC2: [6, 3], FC6: [8, 3],
+      T7: [1, 4], C3: [3, 4], Cz: [5, 4], C4: [7, 4], T8: [9, 4], CP5: [2, 5], CP1: [4, 5], CP2: [6, 5], CP6: [8, 5], P7: [1, 6], P3: [3, 6], Pz: [5, 6], P4: [7, 6], P8: [9, 6],
+      PO3: [3, 7], POz: [5, 7], PO4: [7, 7], O1: [3, 8], Oz: [5, 8], O2: [7, 8] };
+    if (!names.every((n) => P[n])) return null;
+    const uniq = (k) => [...new Set(names.map((n) => P[n][k]))].sort((a, b) => a - b), cs = uniq(0), rs = uniq(1), pos = {};
+    names.forEach((n) => { pos[n] = [cs.indexOf(P[n][0]) + 1, rs.indexOf(P[n][1]) + 1]; });
+    return { cols: cs.length, rows: rs.length, pos };
+  }
+  decorate(v) {
+    const names = this.chNames(), lay = this.headLayout(names), dense = lay ? lay.cols >= 5 : names.length > 8;
+    const at = (n) => (lay ? { gc: lay.pos[n][0], gr: lay.pos[n][1] } : { gc: 'auto', gr: 'auto' });
+    if (v.elecs) v.elecs = v.elecs.map((e) => ({ ...e, ...at(e.n), pad: dense ? '8px 2px' : '14px', sz: dense ? 20 : 36, fn: dense ? '12px' : '16px', fk: dense ? '10.5px' : '13px', wd: dense ? 'none' : 'block', gp: dense ? '4px' : '8px' }));
+    v.elecGrid = { tpl: lay ? (dense ? 'repeat(' + lay.cols + ',minmax(0,1fr))' : 'repeat(' + lay.cols + ',minmax(0,170px))') : dense ? 'repeat(8,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))', gap: dense ? '8px' : '14px' };
+    if (v.calChans) v.calChans = v.calChans.map((c) => ({ ...c, ...at(c.n) }));
+    v.calGrid = { tpl: lay ? 'repeat(' + lay.cols + ',minmax(0,1fr))' : 'repeat(8,minmax(0,1fr))' };
+    return v;
+  }
+  cfgSet(k, val) {
+    const cur = this.state.impCfg, nx = { ...cur, [k]: val }, g = Number(String(nx.good).replace(',', '.')), b = Number(String(nx.bad).replace(',', '.'));
+    this.setState({ impCfg: nx });
+    if (Number.isFinite(g) && Number.isFinite(b) && g > 0 && b > g) {
+      this.persist({ settings: { impGood: g, impBad: b } });
+      if (this.state.link.state !== 'idle' && !(this.lastConn && this.lastConn.sim)) this.eegSend({ cmd: 'config', impGood: g, impBad: b });
+    }
+  }
+  thrArgs() { if (this.lastConn && this.lastConn.sim) return { impGood: 20, impBad: 50 }; const g = Number(String(this.state.impCfg.good).replace(',', '.')), b = Number(String(this.state.impCfg.bad).replace(',', '.')); return g > 0 && b > g ? { impGood: g, impBad: b } : {}; }
+  eegSend(cmd) { return window.neurocue && window.neurocue.eeg ? window.neurocue.eeg.send(cmd) : Promise.resolve(false); }
+  idleLink() { return { state: 'idle', device: null, caps: null, err: null }; }
+  chNames() { const d = this.state.link && this.state.link.device; return this.state.src !== 'demo' && d ? d.channels : ['Fp1', 'Fp2', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2']; }
+  devActive() { return this.state.src !== 'demo'; }
+  scanDevices() { this.setState({ scanning: true, devList: null, scanErr: null }); this.eegSend({ cmd: 'scan' }).then((ok) => { if (ok === false) this.setState({ scanning: false, scanErr: 'Brak środowiska Pythona dla czepka (npm run setup:bridge).' }); }); }
+  connectDevice(d) {
+    this.lastConn = { name: d.name, sim: !!d.sim, model: d.model };
+    this.imp = null; this.frame = null; this.blOn = false;
+    this.setState({ lastConn: this.lastConn, src: d.sim ? 'sim' : 'device', hrSrc: 0, link: { ...this.idleLink(), state: 'connecting', device: { name: d.name, channels: [] } }, devList: null });
+    this.eegSend({ cmd: 'connect', name: d.name, sim: !!d.sim, model: d.model, ...this.thrArgs() });
+    if (d.sim) this.eegSend({ cmd: 'sim', zfinal: d.model === 'MAXI' ? { CP5: 90, P4: 35 } : { P4: 35 } }); // symulator: jedna słabsza elektroda, jak w scenariuszu demonstracyjnym
+  }
+  useDemo() { this.eegSend({ cmd: 'disconnect' }); this.imp = null; this.frame = null; this.setState({ src: 'demo', link: this.idleLink(), devList: null, scanErr: null, elec: Array(8).fill(0) }); }
+  reconnectDevice() { const lc = this.state.lastConn || this.lastConn; if (!lc) { this.toast('Połącz czepek w kroku Czepek'); return; } this.lastConn = lc; this.reconn = true; this.eegSend({ cmd: 'connect', ...lc, ...this.thrArgs() }); this.toast('Łączę ponownie z czepkiem…'); }
+  onEeg(ev) {
+    const s = this.state;
+    if (ev.ev === 'devices') this.setState({ devList: ev.list, scanning: false, scanErr: ev.scanError || null });
+    else if (ev.ev === 'status') {
+      const up = { link: { state: ev.state, device: ev.device, caps: ev.caps, err: null } };
+      if (ev.device && ev.device.channels.length && s.elec.length !== ev.device.channels.length) up.elec = Array(ev.device.channels.length).fill(0);
+      if (ev.state === 'connected' && this.reconn) { this.reconn = false; up.dc = false; up.phase = 'ruch'; up.pt = 0; up.res = null; this.toast('Czepek połączony ponownie'); }
+      this.cmdAt = 0; this.setState(up);
+    }
+    else if (ev.ev === 'impedance') this.imp = ev;
+    else if (ev.ev === 'frame') { this.frame = ev; this.frameAt = Date.now(); if (ev.baselineDone) this.onBaselineDone(ev.baselineDone); }
+    else if (ev.ev === 'battery') { if (s.link.device) this.setState({ link: { ...s.link, device: { ...s.link.device, battery: ev.level } } }); }
+    else if (ev.ev === 'disconnected') { this.setState({ link: this.idleLink(), dc: s.screen === 3 ? true : s.dc }); this.toast('Czepek rozłączony'); }
+    else if (ev.ev === 'error') { this.reconn = false; this.toast('Czepek: ' + ev.message); if (ev.where === 'connect') this.setState({ src: s.max >= 2 ? s.src : 'demo', link: { ...this.idleLink(), err: ev.message } }); }
+    else if (ev.ev === 'bridge-missing' || ev.ev === 'bridge-exit') {
+      const msg = ev.message || 'Proces czepka zakończył się (kod ' + ev.code + ')';
+      this.setState({ link: { ...this.idleLink(), err: msg }, scanning: false, src: s.max >= 2 ? s.src : 'demo', dc: s.screen === 3 && s.src !== 'demo' ? true : s.dc });
+    }
+  }
+  onBaselineDone(res) {
+    this.blOn = false;
+    if (res.ok) this.setState({ calib: 90, calFail: false, calMsg: '', blRes: res });
+    else this.setState({ calib: 90, calFail: true, blRes: res, calMsg: 'Powód: za mało poprawnych kanałów w czystym oknie' + (res.badChannels && res.badChannels.length ? ' (poza zakresem: ' + res.badChannels.slice(0, 5).join(', ') + (res.badChannels.length > 5 ? ' i ' + (res.badChannels.length - 5) + ' innych' : '') + ')' : '') + '.' });
+  }
+  threshold() { const m = /(zmęczenie|obciążenie)\s*>\s*(\d+)/i.exec(this.protos[0].thr || ''); return m ? { key: /zm/i.test(m[1]) ? 'fatigue' : 'load', v: +m[2] } : null; }
+  devWant(s) { return s.screen === 2 && s.prep === 3 ? 'impedance' : (s.screen === 2 && s.prep === 4) || s.screen === 3 ? 'streaming' : 'connected'; }
+  devSync(s) {
+    const st = s.link.state;
+    if (!['connected', 'impedance', 'streaming'].includes(st) || s.dc || (s.screen === 3 && !s.running)) return;
+    const want = this.devWant(s);
+    if (st === want || Date.now() - (this.cmdAt || 0) < 30000) return;   // most jest zajęty zmianą trybu (do kilkunastu s); status od mostu zeruje blokadę
+    this.cmdAt = Date.now();
+    if (want === 'impedance') { this.imp = null; this.eegSend({ cmd: 'impedance', on: true }); }
+    else if (want === 'streaming') { this.streamSince = Date.now(); this.eegSend({ cmd: 'stream', on: true }); }
+    else this.eegSend({ cmd: 'stream', on: false });
+  }
+  blFail(reason) { this.eegSend({ cmd: 'baseline', action: 'stop' }); this.blOn = false; this.setState({ calib: 90, calFail: true, calMsg: reason }); }
+  devPrep(s, up) {
+    const st = s.link.state;
+    if (s.prep === 3 && this.imp && st === 'impedance') up.elec = this.imp.level.map((l) => (l < 0 ? 0 : l === 0 ? 100 : l === 1 ? 70 : 20));
+    if (s.prep === 4 && s.calib < 90 && st === 'streaming') {
+      if (!this.blOn) { this.eegSend({ cmd: 'baseline', action: 'start' }); this.blOn = true; this.blAt = this.blProgAt = Date.now(); this.blProg = 0; up.calib = 0; }
+      const f = this.frame;
+      if (f && f.baseline && f.baseline.cleanS > this.blProg) { this.blProg = f.baseline.cleanS; this.blProgAt = Date.now(); up.calib = Math.min(89.9, f.baseline.cleanS); }
+      if (Date.now() - this.blProgAt > 60000) {
+        const names = this.chNames(), bad = f ? names.filter((n, i) => !f.chOk[i]) : [];
+        this.blFail('Powód: przez minutę nie zebrano czystego sygnału' + (bad.length ? ' (kanały z problemem: ' + bad.slice(0, 5).join(', ') + (bad.length > 5 ? ' i ' + (bad.length - 5) + ' innych' : '') + ')' : f && !f.still ? ' (pacjent w ruchu)' : '') + '.');
+      }
+    }
+    if (!(s.screen === 2 && s.prep === 4) && this.blOn) { this.eegSend({ cmd: 'baseline', action: 'stop' }); this.blOn = false; }
+  }
+  evalCp() {
+    const fr = this.cpFr || [];
+    if (!fr.length) return { res: 'brak', reason: 'Kalibracja nieaktualna' };
+    const med = (k) => { const a = fr.map((x) => x[k]).sort((p, q) => p - q); return a[Math.floor(a.length / 2)]; };
+    const idx = { focus: med('focus'), fatigue: med('fatigue'), load: med('load'), relax: med('relax'), erd: fr[fr.length - 1].erd || {} };
+    const thr = this.threshold();
+    return { res: thr && idx[thr.key] > thr.v ? 'check' : 'ok', reason: null, idx };
+  }
+  finishCp(s, out, up) {
+    const n = s.cps.length + 1;
+    let cps = s.cps.concat({ n, t: s.t, res: out.res, reason: out.reason, decision: null, follow: null, idx: out.idx || null }), banner = null, fu = s.followUp;
+    if (fu && out.res !== 'brak') {
+      let idx = -1; for (let k = cps.length - 2; k >= 0; k--) { if (cps[k].decision && !cps[k].follow) { idx = k; break; } }
+      const persists = out.res === 'check';
+      if (idx >= 0) cps[idx] = { ...cps[idx], follow: persists ? 'utrzymuje' : 'wróciła' };
+      banner = persists ? { bg: '#fbe4e0', col: 'oklch(0.58 0.17 28)', text: 'Odchylenie utrzymuje się. Rozważ zakończenie ćwiczenia i ocenę kliniczną.' } : { bg: '#eaf5ee', col: 'oklch(0.62 0.12 155)', text: 'Wróciła w stronę baseline’u. Decyzja: ' + fu };
+      fu = null;
+    }
+    up.cps = cps; up.banner = banner; up.followUp = fu; up.res = out.res; up.reason = out.reason; if (out.res === 'brak') up.reasonIdx = s.reasonIdx + 1;
+  }
+  devSession(s, up) {
+    up.t = s.t + .5; up.ticks = s.ticks + 1;
+    if (s.link.state !== 'streaming') return;
+    const f = this.frame;
+    if (!f || Date.now() - this.frameAt > 4000) { if (Date.now() - Math.max(this.streamSince || 0, this.frameAt || 0) > 6000) up.dc = true; return; }
+    if (!f.clean) up.mvCount = s.mvCount + 1;
+    if (f.idx) {
+      up.f = f.idx.focus; up.fa = f.idx.fatigue; up.l = f.idx.load; up.r = f.idx.relax;
+      up.H = { f: s.H.f.concat(f.idx.focus).slice(-3000), fa: s.H.fa.concat(f.idx.fatigue).slice(-3000), l: s.H.l.concat(f.idx.load).slice(-3000), r: s.H.r.concat(f.idx.relax).slice(-3000) };
+    }
+    let phase = s.phase, pt = s.pt;
+    if (phase === 'ruch') { this.still = f.still ? (this.still || 0) + 1 : 0; pt = 0; if (this.still >= 2) { phase = 'stab'; this.still = 0; } }
+    else if (phase === 'stab') { if (!f.still) { phase = 'ruch'; pt = 0; this.still = 0; } else if (++pt >= 6) { phase = 'pomiar'; pt = 0; this.pomN = 0; this.cpFr = []; } }
+    else if (phase === 'pomiar') {
+      this.pomN = (this.pomN || 0) + 1;
+      if (!f.still) { phase = 'ruch'; pt = 0; this.still = 0; }
+      else {
+        if (f.clean) { pt++; if (f.idx) (this.cpFr = this.cpFr || []).push(f.idx); }
+        if (pt >= 8) { this.finishCp(s, this.evalCp(), up); phase = 'wynik'; pt = 0; }
+        else if (this.pomN >= 24) {
+          const names = this.chNames(), motorBad = ['C3', 'C4'].some((n) => names.includes(n) && !f.chOk[names.indexOf(n)]);
+          this.finishCp(s, { res: 'brak', reason: motorBad ? 'Słaby kontakt C3/C4' : 'Za krótkie czyste okno' }, up); phase = 'wynik'; pt = 0;
+        }
+      }
+    }
+    else if (phase === 'wynik') { pt++; if (s.res === 'ok' && pt >= 8) { phase = 'ruch'; pt = 0; up.res = null; this.still = 0; } }
+    up.phase = phase; up.pt = pt;
+  }
+  buildReport(s) {
+    const P = this.patients[s.sel], cps = s.cps, brak = cps.filter(c => c.res === 'brak').length;
+    const down = (a) => Array.from({ length: 40 }, (_, i) => a.length ? Math.round(a[Math.min(a.length - 1, Math.floor(i * a.length / 40))]) : 0);
+    return {
+      id: Date.now(), pi: s.sel, patient: P.name, at: new Date().toISOString(), durSec: Math.round(s.t), aborted: !!s.aborted,
+      exDone: Math.min(P.ex.length, s.ex + 1), diff: s.diff, note: s.note, markers: s.markers, cps,
+      cp: cps.length, chk: cps.filter(c => c.res === 'check').length, rej: cps.length ? Math.round(brak / cps.length * 100) : 0,
+      cf: down(s.H.f), ct: down(s.H.fa),
+      src: s.src, device: s.link.device ? { name: s.link.device.name, model: s.link.device.model, channels: s.link.device.channels, fs: s.link.device.fs } : null, calibration: s.blRes || null,
+    };
+  }
+  retryCp() { this.setState({ phase: 'ruch', pt: 0, res: null, banner: null }); }
+
+  onKey(e) {
+    const s = this.state; const meta = e.metaKey || e.ctrlKey;
+    if (meta && e.key.toLowerCase() === 'k') { e.preventDefault(); this.openPalette(); return; }
+    if (e.key === 'Escape') { this.closeOverlay(); return; }
+    if (meta && e.shiftKey && e.key.toLowerCase() === 'a') { e.preventDefault(); if (s.screen !== 5) this.nav(5); return; }
+    if (meta && e.key === '[') { e.preventDefault(); this.goBack(); return; }
+    if (meta && e.key === ']') { e.preventDefault(); this.goFwd(); return; }
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || s.palette || s.sheet) return;
+    if (s.screen === 3) {
+      if (e.key === ' ') { e.preventDefault(); this.togglePause(); }
+      if (e.key.toLowerCase() === 'm') this.addMarker();
+    }
+  }
+
+  toast(msg) { this.toastUntil = Date.now() + 2600; this.setState({ toast: msg }); }
+  fmt(t) { t = Math.floor(t); return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); }
+  nav(i) { const s = this.state; const hist = s.hist.slice(0, s.hi + 1).concat(i); this.setState({ screen: i, max: Math.max(s.max, i), hist, hi: hist.length - 1 }); }
+  goBack() { const s = this.state; if (s.hi > 0) this.setState({ hi: s.hi - 1, screen: s.hist[s.hi - 1] }); }
+  goFwd() { const s = this.state; if (s.hi < s.hist.length - 1) this.setState({ hi: s.hi + 1, screen: s.hist[s.hi + 1] }); }
+  openPalette() { this.setState({ palette: true, q: '' }); setTimeout(() => { const el = document.getElementById('ncq'); if (el) el.focus(); }, 30); }
+  closeOverlay() { this.setState({ palette: false, sheet: false }); }
+  startSession() { this.cpFr = []; this.still = 0; this.pomN = 0; this.setState({ hr: 72, hrH: [], t: 0, ex: 0, mv: 0, mvCount: 0, ticks: 0, markers: [], running: true, note: '', saved: false, aborted: false, cps: [], phase: 'ruch', pt: 0, res: null, reason: null, scen: 'auto', dc: false, followUp: null, banner: null, reasonIdx: 0 }); this.nav(3); }
+  addMarker() { const s = this.state; if (s.screen !== 3) return; this.setState({ markers: s.markers.concat({ t: s.t, label: 'Zdarzenie ' + (s.markers.length + 1) }) }); this.toast('Zaznaczono zdarzenie · ' + this.fmt(s.t)); }
+  togglePause() { const s = this.state; this.setState({ running: !s.running }); this.toast(s.running ? 'Sesja wstrzymana' : 'Sesja wznowiona'); }
+  endSession(reason) { const s = this.state; this.setState({ sheet: false, palette: false, aborted: !!reason, markers: reason ? s.markers.concat({ t: s.t, label: reason }) : s.markers }); this.nav(4); }
+  level(v, kind) {
+    const ok = ['oklch(0.62 0.12 155)', 'circle(50%)'], warn = ['oklch(0.8 0.14 85)', 'polygon(50% 0,100% 100%,0 100%)'], bad = ['oklch(0.58 0.17 28)', 'inset(8%)'];
+    if (kind === 'fa') return v < 40 ? ['Niskie', ok] : v < 70 ? ['Rośnie', warn] : ['Wysokie', bad];
+    if (kind === 'l') return v < 25 ? ['Niskie', warn] : v <= 72 ? ['W zakresie', ok] : ['Wysokie', bad];
+    return v < 28 ? ['Niskie', warn] : v <= 78 ? ['W zakresie', ok] : ['Wysokie', warn];
+  }
+  spark(a) { if (!a.length) return 'M0 20 L200 20'; return a.map((v, i) => (i ? 'L' : 'M') + (i * 200 / Math.max(1, a.length - 1)).toFixed(1) + ' ' + (38 - v * .36).toFixed(1)).join(' '); }
+  chart(a, h) { if (a.length < 2) return 'M0 60 L400 60'; return a.map((v, i) => (i ? 'L' : 'M') + (i * 400 / (a.length - 1)).toFixed(1) + ' ' + (h - v * h / 100 * .9 - 4).toFixed(1)).join(' '); }
+
+  protos = [
+    { name: 'Kończyna górna: chwyt i przenoszenie', phase: 'faza podostra · tyg. 3–12', dur: '8 min', goal: 'Odbudowa chwytu i kontroli ruchu ręki niedowładnej z ograniczeniem kompensacji. Praca w krótkich blokach z kontrolą zmęczenia.', ex: [['Przenoszenie kostek (chwyt)', 3], ['Wyprost łokcia przy stole', 2], ['Rotacja przedramienia', 2], ['Trening bilateralny', 3]], met: [['Dyskomfort', 'e'], ['Skupienie', 'u'], ['Zmęczenie', 'u'], ['Aktywacja ruchowa', 's']], thr: 'zmęczenie > 70%', used: 6, mat: 'UMIARKOWANE', contra: 'Ból barku VAS ≥ 6: ogranicz odwodzenie powyżej 90°. Niestabilne ciśnienie: nie rozpoczynaj.' },
+    { name: 'Neurofeedback: wyobrażanie ruchu (ERD/mu)', phase: 'faza podostra i przewlekła', dur: '12 min', goal: 'Trening kontroli rytmu mu nad korą ruchową. Nagroda wizualna, gdy ERD przekracza próg indywidualny.', ex: [['Linia bazowa (spokojne siedzenie)', 1], ['Wyobrażanie chwytu', 2], ['Wyobrażanie wyprostu łokcia', 3], ['Próba ruchu z nagrodą', 3]], met: [['Aktywacja ruchowa', 's'], ['Relaksacja', 's'], ['Skupienie', 'u'], ['Jakość sygnału', 's']], thr: 'zmęczenie > 65%', used: 4, mat: 'USTALONE', contra: 'Padaczka poudarowa niewyrównana: konsultacja przed sesją. Drażliwość na bodźce wzrokowe.' },
+    { name: 'Uwaga i język przy afazji (piktogramy)', phase: 'każda faza', dur: '6 min', goal: 'Trening uwagi i rozumienia z użyciem piktogramów. Dobrany do pacjentów z afazją ruchową lub czuciową.', ex: [['Dopasowanie piktogramu', 1], ['Wskazanie na polecenie', 2], ['Sekwencja 3 obrazków', 3]], met: [['Skupienie', 'u'], ['Obciążenie poznawcze', 'u'], ['Zmęczenie', 'u']], thr: 'obciążenie > 80%', used: 3, mat: 'UMIARKOWANE', contra: 'Silne zmęczenie lub dezorientacja: skróć blok do 3 min.' },
+    { name: 'Wczesna faza: krótkie bloki', phase: 'faza ostra · tyg. 1–3', dur: '4 min', goal: 'Delikatne wprowadzenie sesji u pacjentów w pierwszych tygodniach po udarze. Priorytetem jest tolerancja czepka i komfort.', ex: [['Kalibracja w spoczynku', 1], ['Ruch bierny z obserwacją', 1], ['Prosty chwyt', 2]], met: [['Dyskomfort', 'e'], ['Zmęczenie', 'u'], ['Jakość sygnału', 's']], thr: 'zmęczenie > 55%', used: 2, mat: 'EKSPLORACYJNE', contra: 'Niestabilny stan neurologiczny. Zawsze obecny drugi terapeuta lub opiekun.' },
+    { name: 'Relaksacja i redukcja napięcia', phase: 'każda faza', dur: '10 min', goal: 'Obniżanie napięcia przed ćwiczeniami lub po nich. Pacjent widzi spokojną wizualizację reagującą na rytm alfa.', ex: [['Oddech z wizualizacją', 1], ['Rozluźnianie karku i barku', 1]], met: [['Relaksacja', 's'], ['Pobudzenie', 'e']], thr: 'bez progu', used: 5, mat: 'USTALONE', contra: 'Brak istotnych.' },
+  ];
+  devices = [
+    { name: 'Czepek EEG A', sub: '8 kanałów · rozmiar M', st: 'ok', status: 'gotowy', bat: '82%', fw: 'v2.4.1', clean: 'wczoraj', serial: 'CZ-A-0142', cap: true, uses: [12, 14, 13, 15, 22, 41, 9, 11], log: [['03.10', 'Czyszczenie po sesji, elektroda P4 z żelem'], ['29.09', 'Wymiana elektrody Fp2'], ['22.09', 'Aktualizacja oprogramowania 2.4.1'], ['10.09', 'Pierwsze uruchomienie']] },
+    { name: 'Czepek EEG B', sub: '8 kanałów · rozmiar L', st: 'wear', status: 'do wymiany 2 elektrody', bat: '64%', fw: 'v2.4.1', clean: '2 dni temu', serial: 'CZ-B-0143', cap: true, uses: [38, 41, 36, 40, 42, 33, 30, 35], log: [['02.10', 'Czyszczenie po sesji'], ['27.09', 'Zgłoszono wysoką impedancję C3'], ['15.09', 'Pierwsze uruchomienie']] },
+    { name: 'Moduł ruchu', sub: 'akcelerometr 3 osie', st: 'ok', status: 'gotowy', bat: '91%', fw: 'v1.8.0', clean: 'wczoraj', serial: 'AC-0220', cap: false, uses: [], log: [['03.10', 'Test łączności'], ['10.09', 'Pierwsze uruchomienie']] },
+    { name: 'Czujnik tętna', sub: 'optyczny, nadgarstek', st: 'ok', status: 'w użyciu · sala 2', bat: '47%', fw: 'v1.2.3', clean: 'wczoraj', serial: 'HR-0318', cap: false, uses: [], log: [['04.10', 'Podłączony do sesji A. Kowalskiej'], ['03.10', 'Ładowanie']] },
+    { name: 'Stacja robocza', sub: 'komputer w sali 2', st: 'ok', status: 'online', bat: 'sieć', fw: 'NeuroCue 0.9.2', clean: 'nd.', serial: 'PC-SALA2', cap: false, uses: [], log: [['04.10', 'Kopia zapasowa lokalna wykonana'], ['01.10', 'Aktualizacja systemu']] },
+  ];
+  archSessions(pi) {
+    const q = this.patients[pi], total = parseInt(q.sessionNo), n = q.custom ? 0 : Math.min(total, 14);
+    const notes = ['Spokojna sesja, dobra współpraca.', 'Szybsze zmęczenie, krótsze bloki.', 'Grymas przy rotacji przedramienia.', 'Wyraźna poprawa chwytu.', 'Zły sen poprzedniej nocy, niższe skupienie.', 'Pacjent zmotywowany, więcej powtórzeń.'];
+    const r = (a) => { const x = Math.sin(a * 91.7 + pi * 13.3) * 43758.5453; return x - Math.floor(x); };
+    const gen = Array.from({ length: n }, (_, k) => {
+      const no = total - n + k + 1, d = new Date(2026, 9, 4 - (n - k) * 2);
+      const f = Math.round(Math.min(92, 38 + k * 2 + r(k) * 10 - (k === 6 ? 12 : 0))), fa = Math.round((6 + k * .55 + r(k + 40) * 2) * 10) / 10;
+      const rej = Math.round(Math.max(5, 26 - k * .8 + (r(k + 80) - .5) * 8)), mk = Math.floor(r(k + 120) * 4);
+      const mkF = (arr, base, amp, drift) => Array.from({ length: 40 }, (_, i) => this.clamp(base + drift * i + (r(i + k * 7 + base) - .5) * amp));
+      return { no, date: d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' }), dur: 8 + Math.floor(r(k + 5) * 5) + ' min', ex: 3 + Math.floor(r(k + 9) * 2), f, fa, rej, mk, note: notes[Math.floor(r(k + 3) * notes.length)], cf: mkF(0, f, 20, 0), ct: mkF(0, 20, 8, 1.1) };
+    });
+    const real = this.state.reports.filter(r => r.pi === pi).map((r, i) => {
+      const d = new Date(r.at), avg = (a) => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : 0;
+      return { rid: r.id, no: q.custom ? i + 1 : total + i, date: d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' }), dur: Math.max(1, Math.round(r.durSec / 60)) + ' min', ex: r.exDone, f: avg(r.cf), fa: avg(r.ct), rej: r.rej, mk: r.markers.length, note: r.note || (r.aborted ? 'Sesja przerwana.' : 'Bez notatki.'), cf: r.cf, ct: r.ct, real: true, cp: r.cp, chk: r.chk, valid: 100 - r.rej, cpsRes: r.cps.map(c => c.res) };
+    });
+    if (real.length && !q.custom) gen.pop(); // dzisiejszy roboczy wpis zastępują prawdziwe sesje
+    return gen.concat(real);
+  }
+  protos2 = [
+    { name: 'Kończyna górna: chwyt i przenoszenie', ver: 'v2.1', status: 'Zatwierdzony', author: 'dr M. Wrona, 12.09.2026', phase: 'faza podostra · tyg. 3–12', dur: '8 min', used: 6, goal: 'Odbudowa chwytu i kontroli ruchu ręki niedowładnej z ograniczeniem kompensacji. Krótkie serie z checkpointem po powtórzeniach.', ex: [['Przenoszenie kostek (chwyt)', 3], ['Wyprost łokcia przy stole', 2], ['Rotacja przedramienia', 2], ['Podnoszenie ręki do przodu', 3]], rules: [['Checkpoint', 'co 2 powtórzenia'], ['Okno pomiaru', '3 s stabilizacji + 4 s czystego sygnału'], ['Maks. powtórzeń checkpointu', '3 na ćwiczenie'], ['Warunki przerwania', 'sprzeciw pacjenta, ból ≥ 7, rozłączenie czepka powyżej 60 s'], ['Przy utrzymującym się odchyleniu', '2 checkpointy z rzędu: zakończ ćwiczenie i oceń klinicznie']], contra: 'Ból barku VAS ≥ 6: ogranicz odwodzenie powyżej 90°. Niestabilne ciśnienie: nie rozpoczynaj.' },
+    { name: 'Mobilizacja barku z ochroną bólu', ver: 'v1.4', status: 'Zatwierdzony', author: 'mgr E. Zielińska, 02.09.2026', phase: 'każda faza', dur: '6 min', used: 4, goal: 'Bezpieczna mobilizacja barku po stronie niedowładnej u pacjentów z bólem barku. Delikatne, powolne ruchy w ograniczonym zakresie.', ex: [['Podparcie i ułożenie ręki', 1], ['Ruch bierny do 60°', 1], ['Ruch czynny wspomagany', 2]], rules: [['Checkpoint', 'po każdym ćwiczeniu'], ['Okno pomiaru', '3 s stabilizacji + 4 s czystego sygnału'], ['Maks. powtórzeń checkpointu', '2 na ćwiczenie'], ['Warunki przerwania', 'grymas bólu, sprzeciw pacjenta, ból ≥ 6'], ['Przy utrzymującym się odchyleniu', 'zakończ ćwiczenie, sprawdź ułożenie barku']], contra: 'Zwichnięcie podbarkowe, świeży uraz. Unikaj odwodzenia powyżej 90°.' },
+    { name: 'Uwaga i język przy afazji (piktogramy)', ver: 'v1.2', status: 'Zatwierdzony', author: 'dr M. Wrona, 20.08.2026', phase: 'każda faza', dur: '6 min', used: 3, goal: 'Trening uwagi i rozumienia z użyciem piktogramów. Dobrany do pacjentów z afazją ruchową lub czuciową.', ex: [['Dopasowanie piktogramu', 1], ['Wskazanie na polecenie', 2], ['Sekwencja 3 obrazków', 3]], rules: [['Checkpoint', 'po każdym zadaniu'], ['Okno pomiaru', '3 s stabilizacji + 4 s czystego sygnału'], ['Maks. powtórzeń checkpointu', '3 na zadanie'], ['Warunki przerwania', 'sprzeciw pacjenta, wyraźna dezorientacja'], ['Przy utrzymującym się odchyleniu', 'skróć blok do 3 min i oceń klinicznie']], contra: 'Silne zmęczenie lub dezorientacja: skróć blok do 3 min.' },
+    { name: 'Wczesna faza: krótkie bloki', ver: 'v0.9', status: 'Roboczy', author: 'oczekuje na zatwierdzenie', phase: 'faza ostra · tyg. 1–3', dur: '4 min', used: 2, goal: 'Delikatne wprowadzenie sesji w pierwszych tygodniach po udarze. Priorytetem jest tolerancja czepka i komfort.', ex: [['Kalibracja w spoczynku', 1], ['Ruch bierny z obserwacją', 1], ['Prosty chwyt', 2]], rules: [['Checkpoint', 'po każdym ćwiczeniu'], ['Okno pomiaru', '3 s stabilizacji + 3 s czystego sygnału'], ['Maks. powtórzeń checkpointu', '2 na ćwiczenie'], ['Warunki przerwania', 'sprzeciw pacjenta, jakikolwiek niepokój'], ['Przy utrzymującym się odchyleniu', 'zakończ sesję']], contra: 'Niestabilny stan neurologiczny. Zawsze obecny drugi terapeuta lub opiekun.' },
+    { name: 'Trening bilateralny (stara wersja)', ver: 'v1.0', status: 'Wycofany', author: 'wycofany 15.07.2026', phase: 'faza podostra', dur: '10 min', used: 0, goal: 'Zastąpiony przez protokół „Kończyna górna” v2.1. Zachowany, bo dotyczy historycznych sesji.', ex: [['Ruch obustronny', 2], ['Przenoszenie z podziałem', 3]], rules: [['Checkpoint', 'co 4 powtórzenia'], ['Okno pomiaru', '4 s'], ['Maks. powtórzeń checkpointu', '5'], ['Warunki przerwania', 'sprzeciw pacjenta'], ['Przy utrzymującym się odchyleniu', 'brak reguły (powód wycofania)']], contra: 'Nie używać w nowych planach.' },
+  ];
+  devices2 = [
+    { name: 'Czepek EEG A', sub: '8 kanałów · rozmiar M', st: 'warn', bat: '82%', fw: 'v2.4.1', clean: 'wczoraj', serial: 'CZ-A-0142', cap: true, uses: [12, 14, 36, 36, 22, 18, 9, 11], log: [['03.10', 'Czyszczenie po sesji'], ['29.09', 'Wymiana elektrody Fp2'], ['22.09', 'Aktualizacja oprogramowania 2.4.1'], ['10.09', 'Pierwsze uruchomienie']] },
+    { name: 'Czepek EEG B', sub: '8 kanałów · rozmiar L', st: 'block', bat: '64%', fw: 'v2.4.1', clean: '2 dni temu', serial: 'CZ-B-0143', cap: true, uses: [38, 41, 36, 40, 42, 33, 30, 35], log: [['02.10', 'Czyszczenie po sesji'], ['27.09', 'Zgłoszono wysoką impedancję C3'], ['15.09', 'Pierwsze uruchomienie']] },
+    { name: 'Moduł ruchu', sub: 'akcelerometr 3 osie', st: 'ok', bat: '91%', fw: 'v1.8.0', clean: 'wczoraj', serial: 'AC-0220', cap: false, uses: [], log: [['03.10', 'Test łączności'], ['10.09', 'Pierwsze uruchomienie']] },
+    { name: 'Opaska tętna', sub: 'optyczna, nadgarstek · opcjonalna', st: 'warn', bat: '24%', fw: 'v1.2.3', clean: 'wczoraj', serial: 'HR-0318', cap: false, uses: [], log: [['04.10', 'Podłączona do sesji A. Kowalskiej'], ['03.10', 'Ładowanie']] },
+    { name: 'Pas EKG', sub: 'pas piersiowy, 1 odprowadzenie · opcjonalny', st: 'ok', bat: '88%', fw: 'v1.0.4', clean: 'dzisiaj', serial: 'ECG-0071', cap: false, uses: [], log: [['04.10', 'Test sygnału EKG'], ['01.10', 'Wymiana pasa']] },
+    { name: 'Stacja robocza', sub: 'komputer w sali 2', st: 'ok', bat: 'sieć', fw: 'NeuroCue 0.9.2', clean: 'nd.', serial: 'PC-SALA2', cap: false, uses: [], log: [['04.10', 'Kopia zapasowa lokalna wykonana'], ['01.10', 'Aktualizacja systemu']] },
+  ];
+  v2(s, P) {
+    const OK = 'oklch(0.62 0.12 155)', AM = 'oklch(0.8 0.14 85)', RD = 'oklch(0.58 0.17 28)', BL = 'oklch(0.55 0.05 250)', TL = 'oklch(0.5 0.1 195)', GR = '#7f8b95';
+    const SH = { circle: 'circle(50%)', tri: 'polygon(50% 0,100% 100%,0 100%)', sq: 'inset(8%)', dia: 'polygon(50% 0,100% 50%,50% 100%,0 50%)', hex: 'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)', bar: 'polygon(0 40%,100% 40%,100% 60%,0 60%)' };
+    const sel = (on) => on ? 'oklch(0.94 0.04 195)' : '#fff', selB = (on) => on ? TL : '#e3e8eb';
+    const hrNames = ['Brak', 'Opaska optyczna', 'EKG (pas piersiowy)'];
+    const hrOpts = hrNames.map((l, i) => ({ l, bg: s.hrSrc === i ? 'oklch(0.94 0.04 195)' : '#fff', bd: s.hrSrc === i ? 'oklch(0.5 0.1 195)' : '#e3e8eb', pick: () => this.setState({ hrSrc: i }) }));
+    const hrNote = ['Bez tętna. Nic się nie psuje, ale tracimy dodatkowy sygnał pobudzenia.', 'Opaska na nadgarstku sprawnej ręki. Bateria 24%, naładuj przed sesją.', 'Pas EKG: dokładniejszy rytm i zmienność rytmu serca (HRV). Zwilż elektrody pasa.'][s.hrSrc];
+    const hrDelta = Math.round(s.hr - 70), hrSpark = s.hrH.length > 1 ? s.hrH.map((v, i) => (i ? 'L' : 'M') + (i * 200 / (s.hrH.length - 1)).toFixed(1) + ' ' + (38 - Math.max(0, Math.min(100, (v - 55) * 2.2)) * .36).toFixed(1)).join(' ') : 'M0 20 L200 20';
+    const hrCard = { on: s.hrSrc > 0, off: s.hrSrc === 0, src: s.hrSrc === 2 ? 'EKG' : 'OPASKA', bpm: Math.round(s.hr), delta: (hrDelta >= 0 ? '+' : '') + hrDelta + ' vs baseline', dcol: hrDelta > 10 ? 'oklch(0.55 0.15 60)' : '#4a5560', d: hrSpark, sub: s.hrSrc === 2 ? 'HRV (RMSSD): ' + Math.round(38 - Math.max(0, hrDelta) * 1.1) + ' ms · wsparcie dla interpretacji, nie samodzielny wynik' : 'Wsparcie dla interpretacji, nie samodzielny wynik' };
+    const tick2 = (on) => ({ mark: on ? '✓' : '', cb: on ? TL : '#fff', cbd: on ? TL : '#9aa5ae', bg: on ? '#eaf5ee' : '#fff', bd: on ? OK : '#e3e8eb' });
+    // ---- consent ----
+    const noCons = P.base === 'noconsent';
+    const fm = noCons ? { chip: 'brak zgody', bg: '#fbe4e0', fg: 'oklch(0.4 0.14 28)', who: 'Brak. Wymagana zgoda przedstawiciela ustawowego.', form: '—', date: '—', until: '—' }
+      : { chip: 'ważna', bg: '#eaf5ee', fg: '#1f5a35', who: P.rep ? 'Przedstawiciel: ' + P.rep.split(' · ')[0] : 'Pacjent (własnoręcznie)', form: 'v1.3 · polski, tryb łatwego czytania', date: '27.09.2026, 10:42', until: '14.10.2026 (za 10 dni)' };
+    const scopeNames = [['Udział w sesji terapeutycznej', 'wymagane'], ['Zapis sygnału EEG, ruchu i tętna', 'wymagane'], ['Wykorzystanie badawcze danych', 'opcjonalne'], ['Eksport danych poza ośrodek', 'opcjonalne']];
+    const scopeItems = scopeNames.map(([t, req], i) => ({ t, req, ...tick2(s.scope[i]), tog: () => this.setState({ scope: s.scope.map((v, j) => j === i ? !v : v) }) }));
+    const assentOpts = [['Pacjent akceptuje', OK, SH.circle], ['Nie można ocenić', AM, SH.tri], ['Pacjent odmawia', RD, SH.sq]].map(([l, col, clip], i) => ({ l, col, clip, bg: s.assent === i ? 'oklch(0.94 0.04 195)' : '#fff', bd: s.assent === i ? TL : '#e3e8eb', pick: () => this.setState({ assent: i }) }));
+    const assentMsg = s.assent === 2 ? { on: true, bg: '#fbe4e0', h: 'Sesja nie może się rozpocząć.', t: 'Odmowa pacjenta jest ważniejsza niż zgoda formalna. Zapisz powód w notatce.' } : s.assent === 1 ? { on: true, bg: '#fdf3d2', h: 'Kontynuuj tylko z obserwacją.', t: 'Terapeuta pilnuje sprzeciwu zachowaniem. Każdy grymas lub odsunięcie ręki przerywa sesję.' } : { on: false, bg: '#fff', h: '', t: '' };
+    const formOk = !noCons, consOk = formOk && s.scope[0] && s.scope[1] && (s.assent === 0 || s.assent === 1);
+    // ---- patient state ----
+    const confOpts = ['Zmęczenie przed sesją', 'Senność', 'Niepokój lub frustracja', 'Zmiana leków przeciwbólowych/uspokajających', 'Spastyczność wyższa niż zwykle'].map((l, i) => ({ l, bg: sel(s.conf.includes(i)), bd: selB(s.conf.includes(i)), pick: () => this.setState({ conf: s.conf.includes(i) ? s.conf.filter(x => x !== i) : s.conf.concat(i) }) }));
+    const commOpts = ['Słowo', 'Gest', 'Karta', 'Wzrok', 'Przycisk'].map((l, i) => ({ l, bg: sel(s.commP === i), bd: selB(s.commP === i), pick: () => this.setState({ commP: i }) }));
+    // ---- electrodes / calibration ----
+    const allE = this.elecReady(s), needFixV = s.elec[5] >= 70 && s.elec[5] < 90 && !s.fixP4 && s.elec.filter((v, i) => i !== 5).every(v => v >= 90);
+    const calDoneRun = s.calib >= 90, calFailed = calDoneRun && s.calFail, calPass = calDoneRun && !s.calFail;
+    const calSt = calPass ? { label: 'Kalibracja zaliczona', col: OK, bg: '#eaf5ee', clip: SH.circle } : calFailed ? { label: 'Kalibracja niezaliczona', col: RD, bg: '#fbe4e0', clip: SH.sq } : s.calMv > 0 ? { label: 'Wykryto ruch: pomiar wstrzymany', col: AM, bg: '#fdf3d2', clip: SH.tri } : { label: 'Zbieranie czystego sygnału', col: TL, bg: '#e3f1f2', clip: SH.circle };
+    const chN = ['Fp1', 'Fp2', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2'];
+    const calChans = chN.map((n, i) => { const bad = calFailed && (i === 2 || i === 3); return { n, col: bad ? RD : OK, clip: bad ? SH.sq : SH.circle, bg: bad ? '#fbe4e0' : '#fff', bd: bad ? RD : '#e3e8eb' }; });
+    const baseOpts = [['Dzisiejszy (nowy)', 'zapisywany po zaliczeniu kalibracji'], ['Poprzedni z 02.10.2026', 'starszy o 12 dni, mniej dokładny']].map(([l, sub], i) => ({ l, s: sub, bg: sel(s.baseSel === i), bd: selB(s.baseSel === i), dot: s.baseSel === i ? '#1b2430' : 'transparent', pick: () => this.setState({ baseSel: i }) }));
+    // ---- prep tabs / gating ----
+    const done = [consOk, s.chk.every(Boolean), s.pos.every(Boolean), allE, calPass];
+    const attn = [s.assent === 2 || noCons, false, false, needFixV, calFailed];
+    const labs = ['Zgoda', 'Stan pacjenta', 'Ułożenie', 'Czepek', 'Kalibracja'];
+    const preps = labs.map((l, i) => ({ go: () => this.setState({ prep: i }), label: (attn[i] ? '! ' : done[i] ? '✓ ' : (i + 1) + ' ') + l, bg: s.prep === i ? '#fff' : 'transparent', sh: s.prep === i ? '0 1px 3px rgba(0,0,0,.15)' : 'none', fg: attn[i] ? 'oklch(0.45 0.15 28)' : s.prep === i ? '#1b2430' : '#4a5560' }));
+    const canNext = done[s.prep];
+    const miss = [noCons ? 'brak ważnej zgody formalnej' : !s.scope[0] || !s.scope[1] ? 'potwierdź wymagany zakres zgody' : s.assent === null ? 'wybierz bieżące przyzwolenie pacjenta' : 'pacjent odmawia — sesja nie może się rozpocząć',
+      'potwierdź wszystkie pozycje po prawej', 'zaznacz brakujące pozycje ułożenia (' + s.pos.filter(v => !v).length + ')', needFixV ? 'popraw elektrodę P4' : 'trwa sprawdzanie elektrod', calFailed ? 'popraw elektrody i powtórz kalibrację' : 'trwa kalibracja: ' + Math.round(s.calib) + ' / 90 s'][s.prep];
+    // ---- session machine ----
+    const key = s.dc ? 'dc' : (s.phase === 'wynik' ? s.res : s.phase);
+    const rem = this.reasons.find(r => r[0] === s.reason);
+    const secs = Math.max(0, Math.ceil((6 - s.pt) / 2));
+    const PH = {
+      ruch: { lab: 'RUCH', sub: 'Pomiar chwilowo wstrzymany', hint: 'Rozpoczniemy po zatrzymaniu pacjenta. Nie oceniaj wyniku.', col: BL, bg: '#e8ecf3', clip: SH.dia },
+      stab: { lab: 'STABILIZACJA', sub: 'Pozostały ' + secs + ' s', hint: 'Nie oceniaj jeszcze wyniku.', col: 'oklch(0.5 0.1 250)', bg: '#e6eefa', clip: SH.hex },
+      pomiar: { lab: 'POMIAR', sub: 'Zbieramy czyste okno', hint: 'Pacjent w bezruchu. Wynik za chwilę.', col: TL, bg: '#e3f1f2', clip: SH.circle },
+      ok: { lab: 'STABILNIE', sub: 'Brak istotnej zmiany względem baseline’u', hint: 'Jakość danych: dobra. Kontynuuj ćwiczenie.', col: OK, bg: '#eaf5ee', clip: SH.circle },
+      check: { lab: 'SPRAWDŹ PACJENTA', sub: 'Reakcja różni się od baseline’u', hint: 'Jakość danych: dobra. Wybierz reakcję poniżej.', col: AM, bg: '#fdf3d2', clip: SH.tri },
+      brak: { lab: 'BRAK WIARYGODNEGO POMIARU', sub: s.reason || '', hint: 'Ten checkpoint nie zostanie zinterpretowany.', col: GR, bg: '#eceff1', clip: SH.bar },
+      dc: { lab: 'CZEPEK ROZŁĄCZONY', sub: 'Sesja wstrzymana, dane do tej pory zapisane', hint: 'Trwa próba automatycznego połączenia…', col: RD, bg: '#fbe4e0', clip: SH.sq },
+    }[key];
+    const idx = { ruch: 0, stab: 1, pomiar: 2 }[s.phase]; const pi = idx === undefined ? 3 : idx;
+    const phaseStrip = ['Ruch', 'Stabilizacja', 'Pomiar', 'Wynik'].map((l, i) => ({ l, bg: s.dc ? '#eceff1' : i < pi ? '#cfe3e6' : i === pi ? '#1b2430' : '#eceff1', fg: s.dc ? '#7f8b95' : i === pi ? '#fff' : '#3d4955' }));
+    const contactBad = key === 'brak' && rem && rem[2] === 'kontakt', moveHigh = s.phase === 'ruch' || (key === 'brak' && rem && rem[2] === 'ruch'), stale = key === 'brak' && rem && rem[2] === 'kalib';
+    const win = s.phase === 'pomiar' ? Math.min(4, s.pt / 2) : (key === 'ok' || key === 'check') ? 4 : 0;
+    const qual = [['Kontakt elektrod', contactBad ? 'słaby C3/C4' : 'dobry', contactBad ? AM : OK, contactBad ? SH.tri : SH.circle], ['Ruch pacjenta', moveHigh ? 'wysoki' : 'niski', moveHigh ? AM : OK, moveHigh ? SH.tri : SH.circle], ['Czyste okno', win.toFixed(1) + ' / 4 s', win >= 4 ? OK : GR, win >= 4 ? SH.circle : SH.bar], ['Baseline', stale ? 'nieaktualny' : 'dzisiejszy 11:08', stale ? AM : OK, stale ? SH.tri : SH.circle], ['Połączenie', s.dc ? 'rozłączony' : 'czepek 82%', s.dc ? RD : OK, s.dc ? SH.sq : SH.circle], ['Tętno', s.hrSrc === 0 ? 'brak czujnika' : s.hrSrc === 1 ? 'opaska OK' : 'EKG OK', s.hrSrc === 0 ? GR : OK, s.hrSrc === 0 ? SH.bar : SH.circle], ['Model', 'm-0.4.2', GR, SH.circle]].map(([k, v, col, clip]) => ({ k, v, col, clip }));
+    const decLabels = ['Kontynuuję bez zmian', 'Zmniejszam obciążenie', 'Robię przerwę', 'Kończę ćwiczenie', 'Sprawdzam ułożenie', 'To był fałszywy alert'];
+    const decOn = key === 'check';
+    const decOpts = decLabels.map(l => ({ l, bg: decOn ? '#fff' : '#f4f6f7', bd: decOn ? '#1b2430' : '#d9dfe3', op: decOn ? 1 : .5, cur: decOn ? 'pointer' : 'not-allowed', pick: () => this.decide(l) }));
+    const resI = { ok: [OK, SH.circle], check: [AM, SH.tri], brak: [GR, SH.bar] };
+    const axis = s.cps.slice(-8).map(c => ({ n: '#' + c.n, col: resI[c.res][0], clip: resI[c.res][1], bg: '#fff', bd: '#d9dfe3', t: c.res === 'ok' ? 'stabilnie' : c.res === 'brak' ? c.reason : (c.decision || 'czeka na decyzję') + (c.follow ? ' → ' + c.follow : '') })).concat({ n: '#' + (s.cps.length + (key === 'ok' || key === 'check' || key === 'brak' ? 0 : 1)), col: PH.col, clip: PH.clip, bg: '#f4f6f7', bd: '#1b2430', t: 'teraz: ' + PH.lab.toLowerCase() });
+    const remRun = rem && rem[2] === 'kalib' ? () => this.setState({ screen: 2, prep: 4, calib: 0, calPaused: false, calMv: 0, calFail: false, hist: s.hist.concat(2), hi: s.hist.length }) : rem && rem[2] === 'kontakt' ? () => this.setState({ screen: 2, prep: 3, hist: s.hist.concat(2), hi: s.hist.length }) : null;
+    const demoDefs = [['Auto', 'auto'], ['Stabilnie', 'ok'], ['Sprawdź pacjenta', 'check'], ['Brak danych', 'none'], ['Rozłączenie czepka', 'dc']];
+    const demoOpts = demoDefs.map(([l, k]) => { const on = k === 'dc' ? s.dc : (!s.dc && s.scen === k); return { l, bg: on ? '#1b2430' : '#fff', bd: '#1b2430', pick: () => k === 'dc' ? this.setState({ dc: true }) : this.setState({ scen: k, dc: false, phase: 'ruch', pt: 0, res: null, followUp: null, banner: null }) }; });
+    // ---- summary ----
+    const cps = s.cps, nCh = cps.filter(c => c.res === 'check').length, nBr = cps.filter(c => c.res === 'brak').length, fu = cps.filter(c => c.follow), back = fu.filter(c => c.follow === 'wróciła').length;
+    const reasonsU = Array.from(new Set(cps.filter(c => c.reason).map(c => c.reason.toLowerCase())));
+    const resL = { ok: 'Stabilnie', check: 'Sprawdź pacjenta', brak: 'Brak pomiaru' };
+    const cpRows = cps.map(c => ({ n: c.n, t: this.fmt(c.t), res: resL[c.res], col: resI[c.res][0], clip: resI[c.res][1], dec: c.res === 'brak' ? c.reason : c.res === 'check' ? (c.decision || 'brak decyzji') + (c.falseAlert ? ' (fałszywy alert)' : '') : '—', fol: c.follow ? (c.follow === 'wróciła' ? 'wróciła do baseline’u' : 'odchylenie utrzymuje się') : '—' }));
+    const insight = (nCh ? 'W ' + nCh + ' checkpointach wykryto odchylenie. ' : 'Nie wykryto istotnych odchyleń. ') + (fu.length ? 'Po ' + fu.length + ' interwencjach reakcja wróciła w stronę baseline’u w ' + back + ' przypadkach. ' : '') + (nBr ? nBr + ' checkpoint(y) odrzucono (' + reasonsU.join(', ') + '). ' : '') + (s.hrSrc > 0 && s.hrH.length ? 'Tętno: średnio ' + Math.round(s.hrH.reduce((a, b) => a + b, 0) / s.hrH.length) + ', maks. ' + Math.round(Math.max(...s.hrH)) + ' bpm (' + (s.hrSrc === 1 ? 'opaska' : 'EKG') + '); wzrosty towarzyszyły checkpointom SPRAWDŹ PACJENTA. ' : '') + 'Wynik nie stanowi oceny natężenia bólu.';
+    const stats = [{ v: cps.length, l: 'checkpointów' }, { v: (cps.length - nBr) + ' / ' + cps.length, l: 'wiarygodnych' }, { v: nBr, l: 'odrzuconych' }, { v: nCh, l: 'SPRAWDŹ PACJENTA' }, { v: fu.length ? back + ' / ' + fu.length : '—', l: 'powrót do baseline’u' }];
+    const markerRows = s.markers.map((m, i) => ({ t: this.fmt(m.t), label: m.label, del: () => { if (!s.saved) this.setState({ markers: s.markers.filter((_, j) => j !== i) }); } }));
+    // ---- archive ----
+    const stI = { 'Roboczy': [AM, SH.tri], 'Zatwierdzony': [OK, SH.circle], 'Wyeksportowany': [TL, SH.hex] };
+    const stN = ['Wszystkie', 'Roboczy', 'Zatwierdzony', 'Wyeksportowany'];
+    const aAll = this.archSessions(s.ap).map((x, k, arr) => { const rr = Math.abs(Math.sin(k * 7.7 + s.ap)); const cp = 8 + Math.floor(rr * 6), chk = Math.floor(Math.abs(Math.sin(k * 3.1 + s.ap)) * 5), valid = Math.round(100 - x.rej * .7); const status = k === arr.length - 1 ? 'Roboczy' : k >= arr.length - 3 ? 'Zatwierdzony' : 'Wyeksportowany'; if (x.real) return { ...x, status: 'Zatwierdzony', stCol: stI['Zatwierdzony'][0], stClip: stI['Zatwierdzony'][1] }; return { ...x, cp, chk, valid, status, stCol: stI[status][0], stClip: stI[status][1] }; });
+    const aS = aAll.filter(x => s.af === 0 || x.status === stN[s.af]);
+    const asel = s.as == null ? aS.length - 1 : Math.min(s.as, aS.length - 1), aCur = aS[asel] || null, aPrev = aS[asel - 1];
+    const mets = [['Sprawdź pacjenta', 'chk', 6], ['Wiarygodne %', 'valid', 100], ['Odrzucone %', 'rej', 40]]; const mk2 = mets[s.am];
+    const chips = aCur ? Array.from({ length: aCur.cp }, (_, i) => { const t = Math.abs(Math.sin(i * 5.3 + aCur.no)); const r = aCur.real ? aCur.cpsRes[i] : i < aCur.chk ? 'check' : t > .88 ? 'brak' : 'ok'; return { n: i + 1, col: resI[r][0], clip: resI[r][1] }; }) : [];
+    const delta = aCur && aPrev ? 'Względem sesji ' + aPrev.no + ': SPRAWDŹ ' + (aCur.chk - aPrev.chk >= 0 ? '+' : '') + (aCur.chk - aPrev.chk) + ', wiarygodne ' + (aCur.valid - aPrev.valid >= 0 ? '+' : '') + (aCur.valid - aPrev.valid) + ' pp.' : 'Brak sesji do porównania.';
+    const exportOk = s.ap !== 4;
+    // ---- protocols ----
+    const prs = this.protos2, PR = prs[Math.min(s.prSel, prs.length - 1)], stBg = { 'Zatwierdzony': '#d6efe0', 'Roboczy': '#fdf0c4', 'Wycofany': '#e1e6ea' };
+    // ---- equipment ----
+    const dvs = this.devices2, DV = dvs[s.eqSel], blocked = !!s.eqBlocked[s.eqSel], tested = !!s.eqTested[s.eqSel], cleaned = !!s.eqClean[s.eqSel];
+    const eqState = (d, i) => s.eqBlocked[i] ? 'block' : d.st;
+    const eqSt = { ok: ['gotowy', OK, SH.circle], warn: ['gotowy · ostrzeżenie', AM, SH.tri], block: ['niegotowy', RD, SH.sq] };
+    const warnE = DV.uses.map((u, i) => [chN[i], u]).filter(([n, u]) => u >= 32 && u < 40), badE = DV.uses.map((u, i) => [chN[i], u]).filter(([n, u]) => u >= 40);
+    const items = []; const it = (t, lvl, st) => items.push({ t, s: st, col: lvl === 'ok' ? OK : lvl === 'warn' ? AM : RD, clip: lvl === 'ok' ? SH.circle : lvl === 'warn' ? SH.tri : SH.sq, col2: lvl === 'ok' ? '#1f5a35' : lvl === 'warn' ? '#7a4a00' : 'oklch(0.45 0.15 28)' });
+    it('Połączenie z urządzeniem', blocked ? 'bad' : 'ok', blocked ? 'zablokowane' : 'OK');
+    it('Bateria ' + DV.bat, parseInt(DV.bat) < 30 ? 'warn' : 'ok', parseInt(DV.bat) < 30 ? 'niska' : 'OK');
+    it('Kalibracja urządzenia aktualna', 'ok', 'OK');
+    it('Ostatnie czyszczenie: ' + (cleaned ? 'dzisiaj' : DV.clean), 'ok', 'OK');
+    if (DV.cap) { it(badE.length ? 'Elektrody po limicie: ' + badE.map(([n, u]) => n + ' ' + u + '/40').join(', ') : warnE.length ? 'Elektrody blisko limitu: ' + warnE.map(([n, u]) => n + ' ' + u + '/40').join(', ') : 'Elektrody w limicie użyć', badE.length ? 'bad' : warnE.length ? 'warn' : 'ok', badE.length ? 'wymień' : warnE.length ? 'wkrótce' : 'OK'); }
+    it('Strumień EEG i akcelerometru', tested ? 'ok' : 'warn', tested ? 'przetestowany' : 'nie testowano dziś');
+    it('Synchronizacja czasu', 'ok', 'dziś 08:02');
+    it('SDK 3.1.0 · oprogramowanie ' + DV.fw, 'ok', 'OK');
+    it('Wolne miejsce na dane: 212 GB', 'ok', 'OK');
+    const nBad = items.filter(i => i.col === RD).length, nWarn = items.filter(i => i.col === AM).length;
+    const rd = nBad ? { label: 'NIEGOTOWY DO SESJI', sub: blocked ? 'Urządzenie oznaczone jako uszkodzone — użycie zablokowane.' : 'Usuń problem przed użyciem: ' + items.filter(i => i.col === RD).map(i => i.t).join('; '), col: RD, bg: '#fbe4e0', clip: SH.sq } : nWarn ? { label: 'GOTOWY DO SESJI', sub: nWarn + ' ostrzeż' + (nWarn === 1 ? 'enie' : 'enia') + ': ' + items.filter(i => i.col === AM).map(i => i.t).join('; '), col: AM, bg: '#fdf3d2', clip: SH.tri } : { label: 'GOTOWY DO SESJI', sub: 'Wszystkie kontrole zaliczone.', col: OK, bg: '#eaf5ee', clip: SH.circle };
+    return {
+      hrOpts, hrNote, hrCard,
+      fm, scopeItems, assentOpts, assentMsg, confOpts, commOpts, toggleSelf: () => this.setState({ selfRep: !s.selfRep }), selfMark: s.selfRep ? '✓' : '', selfBg: s.selfRep ? TL : '#fff', selfBd: s.selfRep ? TL : '#9aa5ae',
+      calS: Math.round(s.calib), calPct: Math.round(s.calib / 90 * 100), calCol: calFailed ? RD : TL, calSt, calChans, calGood: calChans.filter(c => c.col === OK).length, calFailBox: calFailed, baseOpts,
+      calRetry: () => this.setState({ calib: 0, calPaused: false, calMv: 0, calFail: false }), calCancel: () => this.setState({ prep: 3, calib: 0, calPaused: false, calMv: 0, calFail: false }),
+      calDemoFail: () => this.setState({ calFail: !s.calFail }), calDemoLabel: s.calFail ? 'Demo: kalibracja zakończy się niepowodzeniem (kliknij, aby wyłączyć)' : 'Pokaż niepowodzenie kalibracji (demo)',
+      preps, prepLabel: ['Dalej: stan pacjenta  →', 'Dalej: ułożenie  →', 'Dalej: czepek  →', 'Dalej: kalibracja  →', 'Rozpocznij sesję  →'][s.prep], prepBg: canNext ? 'oklch(0.45 0.1 195)' : '#b8c4ca', prepCur: canNext ? 'pointer' : 'not-allowed',
+      prepNext: () => { if (!canNext) return; if (s.prep < 4) this.setState({ prep: s.prep + 1, calib: s.prep + 1 === 4 ? 0 : s.calib, calPaused: false, calMv: 0 }); else this.startSession(); },
+      missing: miss, missDisp: canNext ? 'none' : 'block',
+      toPrep: () => { this.setState({ prep: 0, vas: 2, sleep: 0, chk: [false, false, false], pos: Array(6).fill(false), scope: [true, true, false, false], assent: null, conf: [], elec: Array(this.chNames().length).fill(0), fixP4: false, calib: 0, calPaused: false, calMv: 0, calFail: false }); this.nav(2); },
+      ck: PH, cpNo: key === 'ok' || key === 'check' || key === 'brak' ? s.cps.length : s.cps.length + 1, rep: (s.cps.length * 2) % 10 + 1, phaseStrip, qual, decOpts, decHint: decOn ? 'Wybierz jedną reakcję. Zostanie zapisana w raporcie.' : 'Dostępne po komunikacie SPRAWDŹ PACJENTA', axis, demoOpts,
+      hasBanner: !!s.banner && !s.dc, banner: s.banner || { bg: '#fff', col: '#fff', text: '' }, isBrak: key === 'brak', remedyText: rem ? rem[1] : '', hasRemedy: !!remRun, remedyRun: remRun || (() => {}), remedyLabel: rem && rem[2] === 'kalib' ? 'Wykonaj ponowną kalibrację' : 'Przejdź do elektrod', retryCp: () => this.retryCp(),
+      isDc: s.dc, reconnect: () => { this.setState({ dc: false, phase: 'ruch', pt: 0, res: null }); this.toast('Czepek połączony ponownie'); },
+      protoLine: 'Kończyna górna: chwyt i przenoszenie, v2.1',
+      aborted: s.aborted, stats, cpRows, insight, markerRows, markerEmpty: s.markers.length ? '' : 'Brak zaznaczonych zdarzeń.', locked: s.saved, noteBg: s.saved ? '#f4f6f7' : '#fff',
+      rpt: { label: s.saved ? 'Zatwierdzony' : 'Roboczy', bg: s.saved ? '#d6efe0' : '#fdf0c4' }, reportResearch: () => { if (!s.scope[2]) { this.toast('Eksport badawczy: wymaga zgody na wykorzystanie badawcze (brak)'); return; } this.exportReal(s.sel); },
+      signLabel: s.saved ? 'Zatwierdzone ✓  Następny pacjent  →' : 'Zatwierdź raport',
+      aq: s.aq, aFilters: stN.map((l, i) => ({ l, bg: s.af === i ? '#1b2430' : '#fff', bd: '#1b2430', pick: () => this.setState({ af: i, as: null }) })).map(f => ({ ...f, bd: f.bg === '#1b2430' ? '#1b2430' : '#c3cbd1' })),
+      aMetrics: mets.map(([label], i) => ({ label, bg: s.am === i ? '#fff' : 'transparent', sh: s.am === i ? '0 1px 2px rgba(0,0,0,.15)' : 'none', pick: () => this.setState({ am: i }) })),
+      aN: aAll.length, aEmpty: aS.length === 0,
+      aBars: aS.map((x, i) => ({ n: x.no, v: x[mk2[1]], h: Math.max(4, Math.round(x[mk2[1]] / mk2[2] * 100)), col: i === asel ? 'oklch(0.45 0.1 195)' : 'oklch(0.78 0.05 195)', nc: i === asel ? '#1b2430' : '#6a7681', pick: () => this.setState({ as: i }) })),
+      aRows: aS.slice().reverse().map(x => ({ ...x, bg: x === aCur ? '#e3eef1' : '#fff', pick: () => this.setState({ as: aS.indexOf(x) }) })),
+      sel: aCur ? { no: aCur.no, date: aCur.date, note: aCur.note, delta, chips, status: aCur.status, size: (18 + aCur.cp) + ' MB', consText: exportOk ? 'eksport dozwolony' : 'eksport niedozwolony', consBg: exportOk ? '#eaf5ee' : '#fbe4e0', audit: '04.10 09:12 raport zatwierdzony (E. Zielińska)\n03.10 17:40 notatka dodana\n03.10 17:31 sesja zapisana' } : { no: '—', date: '', note: '', delta: '', chips: [], status: '—', size: '—', consText: '—', consBg: '#f4f6f7', audit: '' },
+      exportAll: () => { if (!exportOk) { this.toast('Brak zgody na eksport danych tego pacjenta'); return; } this.exportReal(s.ap); }, exportOne: () => { if (!exportOk) { this.toast('Eksport zablokowany: brak zgody'); return; } if (!aCur.real) { this.toast('Szczegółowe dane tej sesji nie są dostępne (wpis demonstracyjny)'); return; } this.exportReal(s.ap, aCur.rid); },
+      prList: prs.map((x, i) => ({ name: x.name, ver: x.ver, status: x.status, stBg: stBg[x.status], bg: s.prSel === i ? '#fff' : 'transparent', sh: s.prSel === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ prSel: i }) })),
+      pr: { name: PR.name, phase: PR.phase, dur: PR.dur, goal: PR.goal, used: PR.used, ver: PR.ver, status: PR.status, stBg: stBg[PR.status], author: PR.author, contra: PR.contra },
+      prEx: PR.ex.map(([n, d], i) => ({ i: i + 1, n, d })), prRules: PR.rules.map(([k, v]) => ({ k, v })),
+      eqList: dvs.map((x, i) => { const st = eqSt[eqState(x, i)]; return { name: x.name, status: st[0], col: st[1], clip: st[2], bg: s.eqSel === i ? '#fff' : 'transparent', sh: s.eqSel === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ eqSel: i }) }; }),
+      eq: { name: DV.name, sub: DV.sub, serial: DV.serial, fw: DV.fw, isCap: DV.cap }, rd, rdItems: items,
+      eqElec: DV.uses.map((u, i) => ({ n: chN[i], u, w: u >= 40 ? 'wymień' : u >= 32 ? 'wkrótce' : 'dobra', col: u >= 40 ? RD : u >= 32 ? AM : OK, clip: u >= 40 ? SH.sq : u >= 32 ? SH.tri : SH.circle, bg: u >= 40 ? '#fbe4e0' : u >= 32 ? '#fdf3d2' : '#fff', bd: u >= 40 ? RD : u >= 32 ? AM : '#e3e8eb' })),
+      eqLog: (cleaned ? [['04.10', 'Oznaczono jako wyczyszczony']] : []).concat(DV.log).slice(0, 4).map(([d, t]) => ({ d, t })),
+      eqStream: () => { this.setState({ eqTested: { ...s.eqTested, [s.eqSel]: true } }); this.toast('Strumień EEG i akcelerometru: sygnał poprawny'); },
+      eqBlock: () => { this.setState({ eqBlocked: { ...s.eqBlocked, [s.eqSel]: !blocked } }); this.toast(blocked ? 'Urządzenie odblokowane' : 'Urządzenie zablokowane: oznaczono jako uszkodzone'); }, eqBlockLabel: blocked ? 'Odblokuj urządzenie' : 'Zablokuj (uszkodzone)',
+    };
+  }
+  vLink(s) {
+    const L = s.link, st = L.state, dv = L.device, on = s.src !== 'demo', n = this.chNames().length;
+    const AMB = ['#fdf3d2', '#ecd68a', '#7a4a00'], BLU = ['#e6eefa', '#b9c9e6', '#2c4a7a'], GRN = ['#eaf5ee', '#b7dcc4', '#1f5a35'], RED = ['#fbe4e0', '#e3a79e', 'oklch(0.4 0.14 28)'];
+    const model = dv ? (dv.sim ? 'Symulator czepka' : 'BrainAccess ' + dv.model) : '';
+    let c = AMB, title, sub;
+    if (st === 'connecting') { c = BLU; title = 'Łączenie z ' + (dv && dv.name) + '…'; sub = 'To może potrwać kilka sekund.'; }
+    else if (['connected', 'impedance', 'streaming'].includes(st) && dv) {
+      c = dv.sim ? BLU : GRN; title = model + ' · ' + dv.name;
+      sub = 'Bateria ' + (dv.battery != null ? dv.battery + '%' : 'nd.') + ' · ' + dv.channels.length + ' kanałów · ' + dv.fs + ' Hz' + (dv.accel ? ' · akcelerometr' : ' · bez akcelerometru') + (dv.unmappedCap ? ' · UWAGA: nieznany układ elektrod' : '') + (['MINI', 'MIDI', 'MAXI'].includes(dv.model) ? ' · REF: Fp1, BIAS: Fp2' : '') + (dv.sim ? ' · sygnał testowy, nie pacjent' : '');
+    } else if (st === 'switching' && dv) { c = BLU; title = 'Przełączam tryb pomiaru…'; sub = 'Czepek łączy się ponownie, to trwa kilka sekund. Nie zdejmuj czepka.';
+    } else if (s.scanning) { c = BLU; title = 'Szukam czepków…'; sub = 'Włącz czepek i Bluetooth.'; }
+    else if (L.err) { c = RED; title = 'Czepek niedostępny'; sub = L.err; }
+    else if (s.devList) { c = BLU; title = 'Wybierz czepek'; sub = s.scanErr ? 'Nie udało się przeszukać Bluetooth: ' + s.scanErr : 'Znalezione urządzenia:'; }
+    else { title = 'Czepek niepołączony: tryb demonstracyjny'; sub = 'Dane są symulowane i nie pochodzą z pomiaru. Połącz czepek, aby mierzyć prawdziwy sygnał.'; }
+    const list = (s.devList || []).map((d) => ({ name: d.name, tag: d.sim ? 'symulator, sygnał testowy' : d.mac, pick: () => this.connectDevice(d) }));
+    const dp = { title, sub, bg: c[0], bd: c[1], fg: c[2], list, hasList: list.length > 0 && st === 'idle' && !s.scanning,
+      canScan: st === 'idle' && !s.scanning, scanLabel: s.devList ? 'Szukaj ponownie' : 'Szukaj czepków', scan: () => this.scanDevices(),
+      showCfg: on && dv && !dv.sim && st !== 'idle' && st !== 'connecting', cfgGood: s.impCfg.good, cfgBad: s.impCfg.bad, setGood: (e) => this.cfgSet('good', e.target.value), setBad: (e) => this.cfgSet('bad', e.target.value),
+      canDisc: st !== 'idle' || on, disc: () => { this.useDemo(); this.toast('Rozłączono. Tryb demonstracyjny.'); }, discLabel: on ? 'Rozłącz' : '' };
+    const accel = on && dv ? (dv.accel ? ['działa', 'oklch(0.45 0.12 155)'] : ['brak w tym czepku', '#7a4a00']) : ['działa', 'oklch(0.45 0.12 155)'];
+    const badge = !on ? { l: 'DEMO · dane symulowane', bg: '#fdf3d2', fg: '#7a4a00', bd: '#ecd68a' } : dv && dv.sim ? { l: 'SYMULATOR · sygnał testowy', bg: '#e6eefa', fg: '#2c4a7a', bd: '#b9c9e6' } : { l: model + (dv && dv.battery != null ? ' · ' + dv.battery + '%' : ''), bg: '#eaf5ee', fg: '#1f5a35', bd: '#b7dcc4' };
+    return {
+      elecGoal: on ? 'Cel: kanały C3 i C4 w normie (z nich liczymy desynchronizację ruchową) oraz co najmniej 75% pozostałych kanałów. Progi ustawisz powyżej.' : 'Cel: impedancja poniżej 20 kΩ na wszystkich kanałach. Przy niedowładzie po jednej stronie sprawdź szczególnie kanały C3 i C4.', elecSub: '', dp, srcShow: s.screen >= 2 && s.screen <= 4 && (on ? st !== 'idle' || s.dc : true), srcLabel: badge.l, srcBg: badge.bg, srcFg: badge.fg, srcBd: badge.bd,
+      barDot: !on ? 'oklch(0.8 0.14 85)' : st === 'idle' ? 'oklch(0.58 0.17 28)' : 'oklch(0.62 0.12 155)',
+      barText: !on ? 'Tryb demonstracyjny · dane symulowane' : st === 'idle' ? 'Czepek rozłączony' : model + (dv && dv.battery != null ? ' · ' + dv.battery + '%' : ''),
+      accelTxt: accel[0], accelCol: accel[1], batTxt: on && dv && dv.battery != null ? dv.battery + '%' : '82%',
+      calFailText: on ? (s.calMsg || 'Powód: kalibracja nie powiodła się.') : 'Powód: C3 i C4 poza zakresem, tylko 6 z 8 kanałów poprawnych w czystym oknie.',
+      calReqText: 'JAKOŚĆ PER KANAŁ · WYMAGANE MIN. ' + Math.ceil(0.75 * n) + ' Z ' + n, calN: n, calDemoShow: !on,
+      hrOffText: on ? 'Brak integracji czujnika tętna. Pomiar działa bez niego; ruch kontroluje ' + (dv && dv.accel ? 'akcelerometr czepka.' : 'analiza sygnału EEG (czepek bez akcelerometru).') : 'Brak czujnika tętna. Pomiar działa bez niego; ruch kontroluje akcelerometr. Dodaj opaskę lub pas EKG w kroku Czepek.',
+      demoLabel: s.src === 'device' ? '' : s.src === 'sim' ? 'SYMULATOR' : 'DEMO',
+    };
+  }
+  vDev(s, P) {
+    const OK = 'oklch(0.62 0.12 155)', AM = 'oklch(0.8 0.14 85)', RD = 'oklch(0.58 0.17 28)', TL = 'oklch(0.5 0.1 195)', GR = '#7f8b95', BL = 'oklch(0.55 0.05 250)';
+    const SH = { circle: 'circle(50%)', tri: 'polygon(50% 0,100% 100%,0 100%)', sq: 'inset(8%)', bar: 'polygon(0 40%,100% 40%,100% 60%,0 60%)' };
+    const names = this.chNames(), imp = this.imp, f = this.frame, L = s.link, dv = L.device, n = names.length;
+    const lv = (i) => (s.elec[i] >= 90 ? 0 : s.elec[i] >= 55 ? 1 : 2);
+    const elecs = names.map((nm, i) => {
+      const z = imp && imp.kohm[i] != null ? imp.kohm[i] : null, l = imp ? imp.level[i] : null;
+      const col = l === 0 ? OK : l === 1 ? AM : l === 2 ? RD : GR, clip = l === 0 ? SH.circle : l === 1 ? SH.tri : l === 2 ? SH.sq : SH.circle;
+      return { n: nm, k: z == null ? 'czekam…' : (z >= 999 ? '>999' : Math.round(z)) + ' kΩ', w: l === 0 ? 'dobra' : l === 1 ? 'słaba' : l === 2 ? 'zła' : 'sprawdzam', col, clip,
+        bg: l === 0 ? '#eaf5ee' : l === 2 ? '#fbe4e0' : '#fff', bd: l === 0 ? OK : l === 1 ? AM : l === 2 ? RD : '#e3e8eb' };
+    });
+    const rpt = this.elecReport(s, imp);
+    const allE = this.elecReady(s);
+    const calDoneRun = s.calib >= 90, calFailed = calDoneRun && s.calFail, calPass = calDoneRun && !s.calFail;
+    const live = f && L.state === 'streaming' ? f : null;
+    const moving = live && !live.still, dirty = live && live.still && !live.clean;
+    const calSt = calPass ? { label: 'Kalibracja zaliczona', col: OK, bg: '#eaf5ee', clip: SH.circle } : calFailed ? { label: 'Kalibracja niezaliczona', col: RD, bg: '#fbe4e0', clip: SH.sq }
+      : moving ? { label: 'Wykryto ruch: pomiar wstrzymany', col: AM, bg: '#fdf3d2', clip: SH.tri } : dirty ? { label: 'Słaby kontakt: pomiar wstrzymany', col: AM, bg: '#fdf3d2', clip: SH.tri } : { label: 'Zbieranie czystego sygnału', col: TL, bg: '#e3f1f2', clip: SH.circle };
+    const badNow = (i) => (calFailed && s.blRes ? (s.blRes.badChannels || []).includes(names[i]) : live ? !live.chOk[i] : false);
+    const calChans = names.map((nm, i) => { const bad = badNow(i); return { n: nm, col: bad ? RD : OK, clip: bad ? SH.sq : SH.circle, bg: bad ? '#fbe4e0' : '#fff', bd: bad ? RD : '#e3e8eb' }; });
+    const key = s.dc ? 'dc' : s.phase === 'wynik' ? s.res : s.phase, win = s.phase === 'pomiar' ? Math.min(4, s.pt / 2) : key === 'ok' || key === 'check' ? 4 : 0;
+    const badCh = live ? names.filter((nm, i) => !live.chOk[i]) : [];
+    const hasBase = !!(live && live.idx) || (s.blRes && s.blRes.ok);
+    const qual = [
+      ['Kontakt elektrod', badCh.length ? 'słaby: ' + badCh.slice(0, 3).join(', ') + (badCh.length > 3 ? ' i ' + (badCh.length - 3) + ' innych' : '') : 'dobry', badCh.length ? AM : OK, badCh.length ? SH.tri : SH.circle],
+      ['Ruch pacjenta', live ? (live.still ? 'niski' : 'wysoki') : 'nd.', live && !live.still ? AM : OK, live && !live.still ? SH.tri : SH.circle],
+      ['Czyste okno', win.toFixed(1) + ' / 4 s', win >= 4 ? OK : GR, win >= 4 ? SH.circle : SH.bar],
+      ['Baseline', hasBase ? 'dzisiejszy (z kalibracji)' : 'brak', hasBase ? OK : AM, hasBase ? SH.circle : SH.tri],
+      ['Połączenie', s.dc ? 'rozłączony' : (dv && dv.sim ? 'symulator' : 'czepek' + (dv && dv.battery != null ? ' ' + dv.battery + '%' : '')), s.dc ? RD : OK, s.dc ? SH.sq : SH.circle],
+      ['Tętno', 'brak czujnika', GR, SH.bar],
+      ['Wskaźniki', 'eksperymentalne', GR, SH.circle],
+    ].map(([k, v, col, clip]) => ({ k, v, col, clip }));
+    const demoOpts = s.src === 'sim' ? [['Spokojnie', { motion: false, fatigue: 0, erd: 0, bad: [] }], ['Ruch', { motion: true }], ['Słaby kontakt C3', { motion: false, bad: ['C3'] }], ['Zmęczenie', { motion: false, fatigue: 1 }], ['Desynchronizacja mu', { motion: false, erd: 1 }]]
+      .map(([l, p]) => ({ l, bg: '#fff', bd: '#1b2430', pick: () => this.eegSend({ cmd: 'sim', ...p }) })) : [];
+    const hrOpts = [{ l: 'Brak (czujnik tętna nie jest zintegrowany z czepkiem)', bg: 'oklch(0.94 0.04 195)', bd: TL, pick: () => {} }];
+    return {
+      elecs, elecMsg: rpt.msg, elecSub: rpt.weakTxt || '',
+      needFix: !!imp && !allE && L.state === 'impedance', fixElec: () => { if (s.src === 'sim') this.eegSend({ cmd: 'sim', zfinal: {} }); this.imp = null; this.cmdAt = 0; this.eegSend({ cmd: 'impedance', on: true }); this.setState({ elec: Array(n).fill(0) }); },
+      calChans, calGood: calChans.filter((c) => c.col === OK).length, calSt, calCol: calFailed ? RD : TL,
+      calRetry: () => { this.blOn = false; this.setState({ calib: 0, calFail: false, calMsg: '', blRes: null }); },
+      baseOpts: [{ l: 'Dzisiejszy (nowy)', s: 'zapisywany po zaliczeniu kalibracji', bg: 'oklch(0.94 0.04 195)', bd: TL, dot: '#1b2430', pick: () => {} }],
+      hrOpts, hrNote: 'Czujnik tętna nie jest zintegrowany z czepkiem BrainAccess, więc ta sesja jest bez tętna.',
+      hrCard: { on: false, off: true, src: 'BRAK', bpm: 0, delta: '', dcol: '#4a5560', d: 'M0 20 L200 20', sub: '' },
+      qual, demoOpts,
+      reconnect: () => this.reconnectDevice(),
+      ...(s.screen === 2 && s.prep === 3 && !allE ? { missing: rpt.need } : {}),
+    };
+  }
+  v3(s, P) {
+    const f = s.pf || {}, idx = s.pfIdx, q = idx != null && idx >= 0 ? this.patients[idx] : null, on = s.screen === 8;
+    const set = (k) => (e) => this.setState({ pf: { ...this.state.pf, [k]: e.target.value } });
+    const fld = (k, l, w, ph, type) => ({ l, w: w || 1, ph: ph || '', type: type || 'text', v: f[k] == null ? '' : f[k], set: set(k) });
+    const TL = 'oklch(0.5 0.1 195)';
+    const pfConsentOpts = [['patient', 'Pacjent'], ['rep', 'Przedstawiciel'], ['none', 'Brak zgody']].map(([v, l]) => ({ l, bg: f.consentBy === v ? 'oklch(0.94 0.04 195)' : '#fff', bd: f.consentBy === v ? TL : '#c3cbd1', pick: () => this.setState({ pf: { ...this.state.pf, consentBy: v } }) }));
+    const patList = this.patients.map((x, i) => ({ x, i })).sort((a, b) => (!!a.x.inactive - !!b.x.inactive) || a.x.t.localeCompare(b.x.t)).map(({ x, i }) => ({
+      name: x.name, sub: x.inactive ? 'nieaktywny' : x.t + ' · ' + x.dx.split(',')[0], op: x.inactive ? .55 : 1, bg: idx === i ? '#fff' : 'transparent', sh: idx === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.pfOpenFor(i) }));
+    return {
+      s8: on, patGo: () => { if (s.screen !== 8) this.nav(8); }, patBg: on ? '#fff' : 'transparent', patSh: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', patFw: on ? 700 : 500,
+      patList, patCount: this.patients.filter(x => !x.inactive).length + ' aktywnych', pfOpen: !!s.pf, pfTitle: q ? q.name : 'Nowy pacjent',
+      pfFields: [fld('name', 'Imię i nazwisko', 2, 'np. Jan Kowalski'), fld('age', 'Wiek', 1), fld('dx', 'Rozpoznanie', 2, 'np. Udar niedokrwienny, lewa półkula'), fld('week', 'Tydzień po udarze', 1),
+        fld('side', 'Strona niedowładu i objawy', 2, 'np. niedowład prawostronny'), fld('t', 'Godzina wizyty', 1, '09:00'), fld('comm', 'Komunikacja', 2), fld('plan', 'Planowana liczba sesji', 1),
+        fld('alert', 'Uwaga kliniczna (widoczna przy sesji)', 3, 'np. Ból barku, unikaj odwodzenia powyżej 90°')],
+      pfScales: [fld('fma', 'FMA-UE (0–66)'), fld('barthel', 'Indeks Barthel (0–100)'), fld('vas', 'Ból barku, VAS (0–10)')],
+      pfDates: [fld('consentDate', 'Zgoda wyrażona', 1, '', 'date'), fld('consentUntil', 'Ważna do (opcjonalnie)', 1, '', 'date')],
+      pfConsentOpts, pfRep: !!s.pf && f.consentBy === 'rep', pfRepV: f.repName || '', pfRepSet: set('repName'), pfNoConsent: !!s.pf && f.consentBy === 'none',
+      pfErr: s.pfErr, pfHasErr: !!s.pfErr, pfNew: () => this.pfOpenFor(-1), pfSave: () => this.savePf(), pfCancel: () => this.setState({ pf: null, pfIdx: null, pfErr: '', pfConfirm: false }),
+      pfEditing: !!q, pfToggle: () => this.togglePatientActive(idx), pfToggleLabel: q ? (q.inactive ? 'Przywróć pacjenta' : s.pfConfirm ? 'Na pewno? Dezaktywuj' : 'Dezaktywuj') : '', pfToggleBorder: s.pfConfirm ? 'oklch(0.58 0.17 28)' : '#c3cbd1',
+      draftOpen: !!s.draftOffer, draftName: s.draftOffer ? s.draftOffer.name : '', draftStep: s.draftOffer ? s.draftOffer.step : '', draftAt: s.draftOffer ? s.draftOffer.at : '', draftResume: () => this.resumeDraft(), draftDiscard: () => this.discardDraft(),
+      ...(on ? { title: 'Pacjenci', subtitle: 'Lista, dane i zgody' } : {}),
+    };
+  }
+  renderVals() { return this.decorate(this.renderBase()); }
+  renderBase() {
+    const s = this.state, P = this.patients[s.sel];
+    const names = ['Dzień', 'Pacjent', 'Przygotowanie', 'Sesja', 'Podsumowanie'];
+    const subs = ['Plan na dziś', P.name, P.name + ' · krok ' + (s.prep + 1) + ' z 5', P.name + ' · ćwiczenie ' + (s.ex + 1), 'Sesja zakończona', 'Dane historyczne pacjentów', 'Biblioteka protokołów terapii', 'Czepki, czujniki i materiały'];
+    const matBg = { 'USTALONE': '#d6efe0', 'UMIARKOWANE': '#fdf0c4', 'EKSPLORACYJNE': '#f6d8d3' };
+    const PR = this.protos[s.prSel], metBg = { s: '#d6efe0', u: '#fdf0c4', e: '#f6d8d3' };
+    const DV = this.devices[s.eqSel], stM = { ok: ['oklch(0.62 0.12 155)', 'circle(50%)', '#eaf5ee'], wear: ['oklch(0.8 0.14 85)', 'polygon(50% 0,100% 100%,0 100%)', '#fdf3d2'] };
+    const cleaned = s.eqClean[s.eqSel];
+    const AP = this.patients[s.ap], aS = this.archSessions(s.ap), asel = s.as == null ? aS.length - 1 : Math.min(s.as, aS.length - 1), aCur = aS[asel], aPrev = aS[asel - 1];
+    const mets = [['Skupienie', 'f', '%', 100], ['Czas do zmęczenia', 'fa', ' min', 15], ['Odrzucone okna', 'rej', '%', 40]];
+    const mk2 = mets[s.am];
+    const aq = s.aq.toLowerCase();
+    const aPats = this.patients.map((q, i) => ({ q, i })).filter(({ q }) => (q.name + ' ' + q.dx).toLowerCase().includes(aq)).filter(({ q, i }) => !(q.custom && !s.reports.some(r => r.pi === i))).map(({ q, i }) => ({ name: q.name, dx: q.dx.split(',')[0], n: q.custom ? s.reports.filter(r => r.pi === i).length : parseInt(q.sessionNo), bg: s.ap === i ? '#fff' : 'transparent', sh: s.ap === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ ap: i, as: null }) }));
+    const sgn = (v, good) => (v > 0 ? '+' : '') + v;
+    const delta = aPrev ? 'Względem sesji ' + aPrev.no + ': skupienie ' + sgn(aCur.f - aPrev.f) + ' pp, czas do zmęczenia ' + sgn(Math.round((aCur.fa - aPrev.fa) * 10) / 10) + ' min, odrzucone okna ' + sgn(aCur.rej - aPrev.rej) + ' pp.' : 'Pierwsza sesja w historii.';
+    const nm = (v) => v;
+    const steps = names.map((label, i) => {
+      const cur = s.screen === i, reached = true, done = i < s.max && !cur;
+      return { label, go: () => { if (reached) this.setState({ screen: i, hist: s.hist.concat(i), hi: s.hist.length }); }, cur: reached ? 'pointer' : 'default', op: reached ? 1 : .45,
+        bg: cur ? '#fff' : 'transparent', sh: cur ? '0 1px 3px rgba(0,0,0,.12)' : 'none', fw: cur ? 700 : 500,
+        icon: done ? '✓' : String(i + 1), ibg: cur ? 'oklch(0.45 0.1 195)' : done ? 'oklch(0.62 0.12 155)' : 'transparent', ic: cur || done ? '#fff' : '#6a7681', ib: cur || done ? 'none' : '1.5px solid #9aa5ae' };
+    });
+    const statusMap = { done: ['zakończona', '#e1e6ea', '#4a5560'], next: ['następna', 'oklch(0.9 0.05 195)', 'oklch(0.3 0.08 195)'], wait: ['oczekuje', '#e9eef0', '#3d4955'], noconsent: ['brak zgody', '#fbe4e0', 'oklch(0.4 0.14 28)'] };
+    const day = this.patients.map((q, i) => ({ q, i })).filter(({ q }) => !q.inactive).sort((x, y) => x.q.t.localeCompare(y.q.t)).map(({ q, i }) => { const st = s.doneIdx.includes(i) || q.base === 'done' ? 'done' : q.base; const m = statusMap[st]; return { t: q.t, name: q.name, age: q.age, init: q.init, dx: q.dx.split(',')[0], week: q.week, side: q.side.split(',')[0], status: m[0], chipBg: m[1], chipFg: m[2], bg: s.sel === i ? '#e3eef1' : '#fff', pick: () => this.setState({ sel: i }), open: () => { this.setState({ sel: i }); if (st !== 'done' && st !== 'noconsent') this.nav(1); } }; });
+    const stSel = s.doneIdx.includes(s.sel) || P.base === 'done' ? 'done' : P.base;
+    const canOpen = stSel === 'next' || stSel === 'wait';
+    const p = { ...P, consBg: stSel === 'noconsent' ? '#fbe4e0' : '#eaf5ee', btnLabel: canOpen ? 'Otwórz kartę pacjenta  →' : stSel === 'done' ? 'Sesja zakończona' : 'Brak zgody: nie można rozpocząć', btnBg: canOpen ? 'oklch(0.45 0.1 195)' : '#c9d1d6', btnFg: canOpen ? '#fff' : '#5b6773', btnCur: canOpen ? 'pointer' : 'not-allowed' };
+    const scales = P.scales.map(([a, b, max], i) => ({ n: ['FMA-UE (ręka)', 'Indeks Barthel', 'Ból barku (VAS, mniej = lepiej)'][i], a, b, max, wa: a / max * 100, wb: b / max * 100 }));
+    const exercises = P.ex.map((n, i) => ({ n, d: s.diff[i], dec: () => this.setState({ diff: s.diff.map((v, j) => j === i ? Math.max(1, v - 1) : v) }), inc: () => this.setState({ diff: s.diff.map((v, j) => j === i ? Math.min(5, v + 1) : v) }) }));
+    // prep
+    const rep = P.rep || 'przedstawiciel ustawowy';
+    const ctexts = [['Zgoda przedstawiciela', rep + ' potwierdził(a) pisemną zgodę na pomiar EEG.'], ['Przyzwolenie pacjenta', 'Pacjent został poinformowany prostym językiem i okazuje przyzwolenie (np. kciuk w górę).'], ['Zasada sprzeciwu', 'Grymas, odsunięcie ręki lub karta STOP natychmiast przerywa sesję.']];
+    const consent = ctexts.map(([h, t], i) => ({ h, t, tog: () => this.setState({ consent: s.consent.map((v, j) => j === i ? !v : v) }), mark: s.consent[i] ? '✓' : '', cb: s.consent[i] ? 'oklch(0.5 0.1 195)' : '#fff', cbd: s.consent[i] ? 'oklch(0.5 0.1 195)' : '#9aa5ae', bg: s.consent[i] ? '#eaf5ee' : '#fff', bd: s.consent[i] ? 'oklch(0.62 0.12 155)' : '#e3e8eb' }));
+    const allC = s.consent.every(Boolean);
+    const en = ['Fp1', 'Fp2', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2'];
+    const okC = ['oklch(0.62 0.12 155)', 'circle(50%)'], wC = ['oklch(0.8 0.14 85)', 'polygon(50% 0,100% 100%,0 100%)'], bC = ['oklch(0.58 0.17 28)', 'inset(8%)'];
+    const elecs = en.map((n, i) => { const v = s.elec[i]; const st = v >= 90 ? okC : v >= 55 ? wC : bC; const k = Math.max(5, Math.round(60 - v * .52)); return { n, k: v < 5 ? 'czekam…' : k + ' kΩ', w: v >= 90 ? 'dobra' : v >= 55 ? 'słaba' : 'sprawdzam', col: st[0], clip: st[1], bg: v >= 90 ? '#eaf5ee' : '#fff', bd: v >= 90 ? 'oklch(0.62 0.12 155)' : v >= 55 ? 'oklch(0.8 0.14 85)' : '#e3e8eb' }; });
+    const goodN = s.elec.filter(v => v >= 90).length, allE = goodN === 8, needFix = s.elec[5] >= 70 && s.elec[5] < 90 && !s.fixP4 && s.elec.filter((v, i) => i !== 5).every(v => v >= 90);
+    const elecMsg = allE ? 'Wszystkie elektrody w normie' : needFix ? 'Elektroda P4 ma za wysoką impedancję' : 'Sprawdzam impedancję: ' + goodN + ' z 8 w normie';
+    const calDone = s.calib >= 100;
+    const preps = ['Zgoda', 'Stan pacjenta', 'Ułożenie', 'Czepek', 'Kalibracja'].map((label, i) => ({ go: () => this.setState({ prep: i, calib: i === 4 ? s.calib : s.calib }), label: (i < s.prep ? '✓ ' : '') + label, bg: s.prep === i ? '#fff' : 'transparent', sh: s.prep === i ? '0 1px 3px rgba(0,0,0,.15)' : 'none', fg: s.prep === i ? '#1b2430' : '#5b6773' }));
+    const canNext = [allC, s.chk.every(Boolean), s.pos.every(Boolean), allE, calDone][s.prep];
+    const prepLabel = ['Dalej: stan pacjenta  →', 'Dalej: ułożenie  →', 'Dalej: czepek  →', 'Dalej: kalibracja  →', 'Rozpocznij sesję  →'][s.prep];
+    const hrNames = ['Brak', 'Opaska optyczna', 'EKG (pas piersiowy)'];
+    const hrOpts = hrNames.map((l, i) => ({ l, bg: s.hrSrc === i ? 'oklch(0.94 0.04 195)' : '#fff', bd: s.hrSrc === i ? 'oklch(0.5 0.1 195)' : '#e3e8eb', pick: () => this.setState({ hrSrc: i }) }));
+    const hrNote = ['Bez tętna. Nic się nie psuje, ale tracimy dodatkowy sygnał pobudzenia.', 'Opaska na nadgarstku sprawnej ręki. Bateria 24%, naładuj przed sesją.', 'Pas EKG: dokładniejszy rytm i zmienność rytmu serca (HRV). Zwilż elektrody pasa.'][s.hrSrc];
+    const hrDelta = Math.round(s.hr - 70), hrSpark = s.hrH.length > 1 ? s.hrH.map((v, i) => (i ? 'L' : 'M') + (i * 200 / (s.hrH.length - 1)).toFixed(1) + ' ' + (38 - Math.max(0, Math.min(100, (v - 55) * 2.2)) * .36).toFixed(1)).join(' ') : 'M0 20 L200 20';
+    const hrCard = { on: s.hrSrc > 0, off: s.hrSrc === 0, src: s.hrSrc === 2 ? 'EKG' : 'OPASKA', bpm: Math.round(s.hr), delta: (hrDelta >= 0 ? '+' : '') + hrDelta + ' vs baseline', dcol: hrDelta > 10 ? 'oklch(0.55 0.15 60)' : '#4a5560', d: hrSpark, sub: s.hrSrc === 2 ? 'HRV (RMSSD): ' + Math.round(38 - Math.max(0, hrDelta) * 1.1) + ' ms · wsparcie dla interpretacji, nie samodzielny wynik' : 'Wsparcie dla interpretacji, nie samodzielny wynik' };
+    const tick2 = (on) => ({ mark: on ? '✓' : '', cb: on ? 'oklch(0.5 0.1 195)' : '#fff', cbd: on ? 'oklch(0.5 0.1 195)' : '#9aa5ae', bg: on ? '#eaf5ee' : '#fff', bd: on ? 'oklch(0.62 0.12 155)' : '#e3e8eb' });
+    const vasL = ['brak', 'lekki', 'umiarkowany', 'silny', 'bardzo silny', 'najgorszy'];
+    const vasOpts = [0, 2, 4, 6, 8, 10].map((n, i) => ({ n, l: vasL[i], bg: s.vas === n ? 'oklch(0.94 0.04 195)' : '#fff', bd: s.vas === n ? 'oklch(0.5 0.1 195)' : '#e3e8eb', pick: () => this.setState({ vas: n }) }));
+    const sleepOpts = ['Dobrze', 'Słabo', 'Bardzo słabo'].map((l, i) => ({ l, bg: s.sleep === i ? 'oklch(0.94 0.04 195)' : '#fff', bd: s.sleep === i ? 'oklch(0.5 0.1 195)' : '#e3e8eb', pick: () => this.setState({ sleep: i }) }));
+    const chkItems = ['Ciśnienie w normie dla sesji (poniżej 160/100)', 'Leki przyjęte zgodnie z planem', 'Pacjent wypoczęty, bez nowych objawów i przeciwwskazań'].map((t, i) => ({ t, ...tick2(s.chk[i]), tog: () => this.setState({ chk: s.chk.map((v, j) => j === i ? !v : v) }) }));
+    const posItems = ['Plecy oparte, stopy stabilnie na podłożu', 'Ręka niedowładna podparta, bark chroniony', 'Hamulce wózka zablokowane', 'Ekran w polu widzenia pacjenta', 'Karta STOP w zasięgu sprawnej ręki', 'Kable czepka nie napinają głowy'].map((t, i) => ({ t, ...tick2(s.pos[i]), tog: () => this.setState({ pos: s.pos.map((v, j) => j === i ? !v : v) }) }));
+    const zm = Math.min(1.75, Math.max(1, s.vw / 1500));
+    // session
+    const disc = s.mv > 0 ? { label: 'Brak pomiaru', bg: '#eceff1', edge: '#9aa5ae', fg: '#9aa5ae', clip: 'polygon(0 45%,100% 45%,100% 55%,0 55%)' }
+      : s.d < 40 ? { label: 'Spokój', bg: '#eaf5ee', edge: 'oklch(0.62 0.12 155)', fg: 'oklch(0.62 0.12 155)', clip: 'circle(50%)' }
+      : s.d < 70 ? { label: 'Uwaga', bg: '#fdf3d2', edge: 'oklch(0.8 0.14 85)', fg: 'oklch(0.8 0.14 85)', clip: 'polygon(50% 0,100% 100%,0 100%)' }
+      : { label: 'Dyskomfort', bg: '#fbe4e0', edge: 'oklch(0.58 0.17 28)', fg: 'oklch(0.58 0.17 28)', clip: 'inset(8%)' };
+    const mk = (name, mat, v, kind, arr) => { const [word, c] = this.level(v, kind); return { name, mat, word, pos: Math.round(v), col: c[0], clip: c[1], d: this.spark(arr.slice(-40)) }; };
+    const tiles = [mk('Skupienie', 'umiarkowane', s.f, 'f', s.H.f), mk('Zmęczenie', 'umiarkowane', s.fa, 'fa', s.H.fa), mk('Obciążenie', 'umiarkowane', s.l, 'l', s.H.l), mk('Relaksacja', 'ustalone', s.r, 'r', s.H.r)];
+    const exList = P.ex.map((n, i) => ({ n, d: s.diff[i], k: i < s.ex ? 'wykonane ✓' : i === s.ex ? 'teraz' : 'następne', bg: i === s.ex ? '#fff' : 'transparent', sh: i === s.ex ? '0 1px 3px rgba(0,0,0,.12)' : 'none', op: i < s.ex ? .55 : 1, fw: i === s.ex ? 700 : 500 }));
+    const last = s.ex >= P.ex.length - 1;
+    const avg = (a) => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : 0;
+    const rej = s.ticks ? Math.round(s.mvCount / s.ticks * 100) : 0;
+    const peakFa = Math.round(Math.max(0, ...s.H.fa));
+    const cmdsAll = [
+      ...names.map((n, i) => ({ label: 'Przejdź: ' + n, hint: i <= s.max ? '' : 'zablokowane', ok: i <= s.max, run: () => { if (i <= s.max) { this.setState({ screen: i, palette: false, hist: s.hist.concat(i), hi: s.hist.length }); } } })),
+      { label: 'Otwórz protokoły', hint: '', ok: true, run: () => { this.setState({ palette: false }); this.nav(6); } },
+      { label: 'Otwórz sprzęt', hint: '', ok: true, run: () => { this.setState({ palette: false }); this.nav(7); } },
+      { label: 'Otwórz pacjentów', hint: '', ok: true, run: () => { this.setState({ palette: false }); this.nav(8); } },       { label: 'Otwórz archiwum', hint: '⌘⇧A', ok: true, run: () => { this.setState({ palette: false }); this.nav(5); } },
+      { label: 'Zaznacz zdarzenie', hint: 'M', ok: s.screen === 3, run: () => { this.setState({ palette: false }); this.addMarker(); } },
+      { label: s.running ? 'Wstrzymaj sesję' : 'Wznów sesję', hint: 'Spacja', ok: s.screen === 3, run: () => { this.setState({ palette: false }); this.togglePause(); } },
+      { label: 'Zakończ sesję', hint: '', ok: s.screen === 3, run: () => this.setState({ palette: false, sheet: true }) },
+    ].filter(c => c.ok && c.label.toLowerCase().includes(s.q.toLowerCase()));
+    const insightFa = peakFa > 70 ? 'Zmęczenie przekroczyło zakres docelowy. Rozważ krótsze bloki w następnej sesji.' : 'Zmęczenie utrzymało się w zakresie docelowym.';
+    return {
+      clock: s.now.toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'short' }) + '  ' + s.now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+      protGo: () => { if (s.screen !== 6) this.nav(6); }, protBg: s.screen === 6 ? '#fff' : 'transparent', protSh: s.screen === 6 ? '0 1px 3px rgba(0,0,0,.12)' : 'none', protFw: s.screen === 6 ? 700 : 500,
+      eqGo: () => { if (s.screen !== 7) this.nav(7); }, eqBg: s.screen === 7 ? '#fff' : 'transparent', eqSh: s.screen === 7 ? '0 1px 3px rgba(0,0,0,.12)' : 'none', eqFw: s.screen === 7 ? 700 : 500,
+      s6: s.screen === 6, s7: s.screen === 7,
+      prList: this.protos.map((x, i) => ({ name: x.name, phase: x.phase, dur: x.dur, bg: s.prSel === i ? '#fff' : 'transparent', sh: s.prSel === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ prSel: i }) })),
+      pr: { name: PR.name, phase: PR.phase, dur: PR.dur, goal: PR.goal, nEx: PR.ex.length, thr: PR.thr, used: PR.used, mat: PR.mat, matBg: matBg[PR.mat], contra: PR.contra },
+      prEx: PR.ex.map(([n, d], i) => ({ i: i + 1, n, d })), prMet: PR.met.map(([l, k]) => ({ l, bg: metBg[k] })),
+      newProt: () => this.toast('Kreator nowego protokołu otwarty'), dupProt: () => this.toast('Zduplikowano: ' + PR.name), useProt: () => this.toast('Protokół dodany do planu: ' + P.name),
+      eqList: this.devices.map((x, i) => ({ name: x.name, status: x.status, col: stM[x.st][0], clip: stM[x.st][1], bg: s.eqSel === i ? '#fff' : 'transparent', sh: s.eqSel === i ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ eqSel: i }) })),
+      eq: { name: DV.name, sub: DV.sub, status: DV.status, col: stM[DV.st][0], clip: stM[DV.st][1], bg: stM[DV.st][2], edge: stM[DV.st][0], bat: DV.bat, fw: DV.fw, clean: cleaned ? 'dzisiaj' : DV.clean, serial: DV.serial, isCap: DV.cap },
+      eqElec: DV.uses.map((u, i) => ({ n: ['Fp1', 'Fp2', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2'][i], u, w: u >= 40 ? 'wymień' : u >= 32 ? 'wkrótce' : 'dobra', col: u >= 40 ? 'oklch(0.58 0.17 28)' : u >= 32 ? 'oklch(0.8 0.14 85)' : 'oklch(0.62 0.12 155)', clip: u >= 40 ? 'inset(8%)' : u >= 32 ? 'polygon(50% 0,100% 100%,0 100%)' : 'circle(50%)', bg: u >= 40 ? '#fbe4e0' : '#fff', bd: u >= 40 ? 'oklch(0.58 0.17 28)' : '#e3e8eb' })),
+      eqLog: (cleaned ? [['04.10', 'Oznaczono jako wyczyszczony']] : []).concat(DV.log).map(([d, t]) => ({ d, t })),
+      eqCons: [['Żel do elektrod', '6 tub', '#1b2430'], ['Elektrody zapasowe', '3 szt.', 'oklch(0.5 0.17 28)'], ['Środek dezynfekujący', 'OK', '#1b2430']].map(([n, v, col]) => ({ n, v, col })),
+      eqTest: () => this.toast('Test łączności: ' + DV.name + ' odpowiada'), eqIssue: () => this.toast('Zgłoszenie usterki zapisane: ' + DV.name),
+      eqCleanDo: () => { this.setState({ eqClean: { ...s.eqClean, [s.eqSel]: true } }); this.toast(DV.name + ': oznaczono jako wyczyszczony'); },
+      title: s.screen >= 5 ? ['Archiwum', 'Protokoły', 'Sprzęt'][s.screen - 5] : names[s.screen], subtitle: subs[s.screen], clockT: this.fmt(s.t),
+      archGo: () => { if (s.screen !== 5) this.nav(5); }, archBg: s.screen === 5 ? '#fff' : 'transparent', archSh: s.screen === 5 ? '0 1px 3px rgba(0,0,0,.12)' : 'none', archFw: s.screen === 5 ? 700 : 500,
+      s5: s.screen === 5, aq: s.aq, setAq: (e) => this.setState({ aq: e.target.value }), aPats, aCount: aPats.length, ap: { name: AP.name, dx: AP.dx, side: AP.side }, aN: aS.length,
+      aMetrics: mets.map(([label], i) => ({ label, bg: s.am === i ? '#fff' : 'transparent', sh: s.am === i ? '0 1px 2px rgba(0,0,0,.15)' : 'none', pick: () => this.setState({ am: i }) })),
+      aBars: aS.map((x, i) => ({ n: x.no, v: x[mk2[1]], h: Math.max(4, Math.round(x[mk2[1]] / mk2[3] * 100)), col: i === asel ? 'oklch(0.45 0.1 195)' : 'oklch(0.78 0.05 195)', nc: i === asel ? '#1b2430' : '#6a7681', pick: () => this.setState({ as: i }) })),
+      aRows: aS.slice().reverse().map((x) => ({ ...x, bg: x === aCur ? '#e3eef1' : '#fff', pick: () => this.setState({ as: aS.indexOf(x) }) })),
+      sel: { no: aCur.no, date: aCur.date, note: aCur.note, delta, cf: this.chart(aCur.cf, 100), ct: this.chart(aCur.ct, 100) },
+      exportAll: () => this.toast('Historia pacjenta wyeksportowana do PDF'), exportOne: () => this.toast('Surowe dane sesji ' + aCur.no + ' (EDF+) zapisane'), openRep: () => this.toast('Raport sesji ' + aCur.no + ' otwarty'),
+      backOp: s.hi > 0 ? 1 : .3, fwdOp: s.hi < s.hist.length - 1 ? 1 : .3, goBack: () => this.goBack(), goFwd: () => this.goFwd(), openPalette: () => this.openPalette(),
+      steps, s0: s.screen === 0, s1: s.screen === 1, s2: s.screen === 2, s3: s.screen === 3, s4: s.screen === 4, day, p, scales, exercises,
+      openPatient: () => { if (canOpen) this.nav(1); }, toDay: () => this.nav(0),
+      toPrep: () => { this.setState({ prep: 0, vas: 2, sleep: 0, chk: [false, false, false], pos: Array(6).fill(false), consent: [false, false, false], elec: Array(this.chNames().length).fill(0), fixP4: false, calib: 0 }); this.nav(2); },
+      preps, p0: s.prep === 0, pA: s.prep === 1, pB: s.prep === 2, p1: s.prep === 3, p2: s.prep === 4, vasOpts, sleepOpts, chkItems, posItems, vasWarn: s.vas >= 6, zoomV: zm, hV: (100 / zm) + 'vh', consent, elecs, elecMsg, needFix, fixElec: () => this.setState({ fixP4: true }),
+      calib: Math.round(s.calib), calibLabel: calDone ? '✓' : this.fmt((100 - s.calib) * 1.2), calibSub: calDone ? 'zapisana' : 'zostało',
+      calibNote: calDone ? 'Linia bazowa zapisana. Wskaźniki będą pokazywane względem tego pacjenta.' : 'Pomiar w toku. Jakość sygnału dobra, brak ruchu.',
+      prepBackLabel: s.prep === 0 ? 'Wróć do pacjenta' : 'Wstecz', prepBack: () => s.prep === 0 ? this.nav(1) : this.setState({ prep: s.prep - 1 }),
+      prepLabel, prepBg: canNext ? 'oklch(0.45 0.1 195)' : '#b8c4ca', prepCur: canNext ? 'pointer' : 'not-allowed',
+      prepNext: () => { if (!canNext) return; if (s.prep < 4) this.setState({ prep: s.prep + 1, calib: 0 }); else this.startSession(); },
+      exList, nextEx: () => { if (last) this.setState({ sheet: true }); else this.setState({ ex: s.ex + 1 }); }, nextExLabel: last ? 'To było ostatnie · zakończ' : 'Następne ćwiczenie  →',
+      erd: Math.round(30 + s.r * .3 + (s.ex === 2 ? 25 : 0)), curEx: P.ex[s.ex], qualLabel: s.mv > 0 ? 'niska (ruch)' : 'dobra', disc, tiles,
+      sugg: s.sugg, doBreak: () => { this.setState({ sugg: false, suggDone: true, fa: s.fa - 38, running: true }); this.toast('Przerwa 2 min · zmęczenie spada'); }, dismissSugg: () => this.setState({ sugg: false, suggDone: true }),
+      togglePause: () => this.togglePause(), pauseLabel: s.running ? 'Pauza' : 'Wznów', addMarker: () => this.addMarker(), stopNow: () => this.endSession('Sprzeciw pacjenta: sesja przerwana'), askEnd: () => this.setState({ sheet: true }),
+      stats: [{ v: this.fmt(s.t), l: 'czas sesji' }, { v: (s.ex + 1) + ' / ' + P.ex.length, l: 'ćwiczeń' }, { v: rej + '%', l: 'okien odrzuconych (ruch)' }, { v: s.markers.length, l: 'zdarzeń zaznaczonych' }],
+      chartF: this.chart(s.H.f, 120), chartT: this.chart(s.H.fa, 120),
+      insight: 'Średnie skupienie: ' + avg(s.H.f) + '%. ' + insightFa + ' Sygnał pomocniczy, nie diagnoza.',
+      markerText: s.markers.length ? s.markers.map(m => this.fmt(m.t) + '  ' + m.label).join('\n') : 'Brak zaznaczonych zdarzeń.',
+      note: s.note, setNote: (e) => this.setState({ note: e.target.value }),
+      reportFamily: () => this.exportPdf('family'), reportDoc: () => this.exportPdf('clinical'),
+      signLabel: s.saved ? 'Zapisane ✓  Następny pacjent  →' : 'Podpisz i zapisz',
+      signSave: () => { if (!s.saved) { const rp = this.buildReport(s), reports = s.reports.concat(rp), doneIdx = s.doneIdx.concat(s.sel); this.setState({ saved: true, doneIdx, reports }); const P2 = { ...this.patients[s.sel] }; if (s.note && s.note.trim()) P2.lastNote = s.note.trim(); if (P2.custom) P2.sessionNo = ((parseInt(P2.sessionNo) || 1) + 1) + ' z ' + (String(P2.sessionNo).split('z')[1] || ' 24').trim(); const pts = this.patients.slice(); pts[s.sel] = P2; this.patients = pts; this.hasDraft = false; this.persist({ reports, doneIdx, doneDay: this.today(), patients: pts, draft: null }); this.toast('Raport podpisany i zapisany lokalnie'); } else { this.setState({ sel: Math.min(this.patients.length - 1, s.sel + 1), max: 0 }); this.setState({ screen: 0, hist: [0], hi: 0 }); } },
+      hasToast: !!s.toast, toast: s.toast || '',
+      paletteOpen: s.palette, q: s.q, setQ: (e) => this.setState({ q: e.target.value }), cmds: cmdsAll, closeOverlay: () => this.closeOverlay(), stop: (e) => e.stopPropagation(),
+      sheetEnd: s.sheet, confirmEnd: () => this.endSession(null),
+      ...this.v2(s, P),
+      ...this.v3(s, P),
+      ...this.vLink(s),
+      ...(s.src !== 'demo' ? this.vDev(s, P) : {}),
+    };
+  }
+}
+</script>
+</body>
+</html>

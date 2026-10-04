@@ -1,0 +1,24 @@
+{
+  "name": "neurocue-clinic",
+  "version": "0.1.0",
+  "description": "NeuroCue Clinic — desktopowa aplikacja neurofeedback dla neurorehabilitacji",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "setup:bridge": "python3 -m venv .venv && .venv/bin/pip install -r bridge/requirements.txt",
+    "test:bridge": ".venv/bin/python bridge/test_dsp.py && cd bridge && ../.venv/bin/python test_bridge.py",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.29.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
