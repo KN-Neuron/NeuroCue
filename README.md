@@ -1,4 +1,4 @@
-# NeuroCue Clinic
+# NeuroCue 
 
 Desktopowa aplikacja neurofeedback dla neurorehabilitacji (prototyp). Terapeuta prowadzi sesję ćwiczeń z pacjentem,
 a aplikacja na bieżąco pokazuje jakość sygnału EEG i prosty wskaźnik stanu pacjenta (**Stabilnie / Sprawdź pacjenta / Brak pomiaru**).
